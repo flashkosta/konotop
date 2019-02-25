@@ -1,0 +1,233 @@
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Chess v0.1</title>
+</head>
+
+<body>
+
+    <div id="board" class="mx-auto"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div id="gameover"><span style="color: brown"></span></div>
+                <div id="turn"></div>
+                <div id="pgn"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="js/chess.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+    //TODO: [x]сделать удаление fen нотации
+    //TODO: сделать выбор фигуры при promotion pawn
+    //TODO: живые нотации
+    //NOTE (живые нотации) при возвращении к определенной позиции, все, что было после этой позиции удаляется, а игрок может
+    
+    //объявляем переменные
+    var div_name = "#board";
+    var pgn_state = 0;
+    var pgn, turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, fen_array_step, notation;
+    var fen_array = [];
+    var pgn_array = [];
+    var pgn_history = [];//история нотации
+
+    function PGNLive() {//живые нотации
+        
+        if (pgn_state == 0) {
+            notation = chess.pgn();
+            var reg = /\[SetUp \"1\"\]\n\[FEN \"[a-z0-9/ -]+\"]/gi;
+            notation = notation.replace(reg, "");//удаляем FEN приписки
+            notation = notation.replace(/\n/gm, "");
+        
+            for(var i = 0; i<=pgn_array.length; i++) {
+                notation = notation.replace(pgn_array[i], "<div class=\"d-inline bg-warning \" id=\"step" + i + "\"><button type=\"button\" class=\"btn btn-warning\">" + pgn_array[i] + "</button></div>");
+            }
+        }
+        
+        $("#pgn").html(notation);
+        
+        $( " #pgn > div" ).each(function(event) {
+            $(this).mouseup(function() {
+                var step = $(this).attr("id").replace("step", "");
+                fen_array_step = fen_array[step];
+                chess.load_pgn(pgn_history[step]);
+                console.log("STEP " + step);
+                pgn_state = 1
+                board_arr = chess.board();
+                drawing_board();
+                move();
+            });
+        });
+        
+    }
+    
+    function drawing_board() {//рисуем доску
+
+        var square_wh = $(window).width() / 8;
+        var color_w = "bg-light";
+        var color_b = "bg-info";
+        var color;
+        var color_step = 1;
+        var table = "<table class=\"chess_board\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
+        var arrabc = ["a", "b", "c", "d", "e", "f", "g", "h"];
+        var figure;
+        var coordinates;
+        var coord_abc = ["a", "b", "c", "d", "e", "f", "g", "h"];
+
+        $(div_name).html("");
+
+        for (var y = 0; y <= 7; y++) { //abc
+            table += "<tr>";
+            if (color_step == 1) {
+                color_step = 2;
+            } else {
+                color_step = 1;
+            }
+            for (var x = 0; x <= 7; x++) { //012
+                if (color_step == 1) {
+                    color = color_b;
+                    color_step = 2;
+                } else {
+                    color = color_w;
+                    color_step = 1;
+                }
+                if (board_arr[y][x] != null) {//если квадрат доски не пустой, читаем фигуру и формируем тег img
+                    var t = board_arr[y][x].type;
+                    var c = board_arr[y][x].color;
+                    if (t == "r") {
+                        figure = "r" + c + ".png";
+                    } //rook
+                    if (t == "n") {
+                        figure = "n" + c + ".png";
+                    } //knight
+                    if (t == "b") {
+                        figure = "b" + c + ".png";
+                    } //bishop
+                    if (t == "q") {
+                        figure = "q" + c + ".png";
+                    } //queen
+                    if (t == "k") {
+                        figure = "k" + c + ".png";
+                    } //kong
+                    if (t == "p") {
+                        figure = "p" + c + ".png";
+                    } //pawn
+
+                    var img = "<img src=\"img/figures/" + figure + "\" width=\"" + (square_wh - 5) + "\" height=\"" + (square_wh - 5) + "\">";
+                } else {
+                    var img = "";
+                }
+                if (x == 0) { //coordinates 123 отрисовка координат цифровых
+                    if (y <= 7) {
+                        coordinates = 8 - y;
+                        if (y == 7) {
+                            coordinates += "a";
+                        }
+                    }
+                } else if (y == 7) { //coordinates ABC отрисовка координат буквенных
+                    if (x <= 7) {
+                        coordinates = coord_abc[x];
+                    }
+                } else {
+                    coordinates = "";
+                }
+                table += "<td><div align=\"center\" id=\"" + arrabc[x] + (8 - y) + "\" class=\"" + color + " square\" style=\"width: " + square_wh + "px; height: " + square_wh + "px\">" + img + "<span>" + coordinates + "</span></div></td>";
+            }
+            table += "</tr>";
+        }
+        table += "</table>";
+        $(div_name).append(table);
+        
+        //check game over
+        if_gameover = chess.game_over();
+        //шаг
+        if_check = chess.in_check();
+        //мат
+        if_mate = chess.in_checkmate();
+        //пат
+        if_stalemate = chess.in_stalemate();
+        
+        var mess = "";
+        if (if_gameover) {mess += "Игра окончена!";}
+        if (if_check) {mess += " Шах!";}
+        if (if_mate) {mess += " Мат!";}
+        if (if_stalemate) {mess += " Пат!";}
+        
+        $("#gameover > span").text(mess);
+        //turn
+        turn = chess.turn();
+        if (turn == "b") {
+            turn = "Ход черных";
+        } else {
+            turn = "Ход белых";
+        }
+        $("#turn").text(turn);
+        //PGN
+        PGNLive();
+    }
+
+    function move() {
+        var from, to;
+        var check = 0;
+        $(div_name + " > table > tbody > tr > td > div").each(function(event) {
+            $(this).mouseup(function() {
+                $(this).removeClass("bg-light");
+                $(this).removeClass("bg-info");
+                $(this).addClass("bg-warning");
+                var position = $(this).attr("id");
+                
+                check++;
+                if (check == 1) {//первое нажатие
+                    from = position;
+                    console.log("from: " + from);
+                }
+                if (check == 2) {//второе нажатие
+                    to = position;
+                    console.log("to: " + to);
+                    var result = chess.move({//ходим
+                        from: from,
+                        to: to,
+                        promotion: "q"
+                    });
+                    if (result) {
+                        fen_array.push(chess.fen());//добавляем в массив FEN каждого хода
+                        pgn_array.push(result.san);//добавляем в массив единичный PGN каждого хода
+                        pgn_history.push(chess.pgn());//добавляем в массив PGN нотацию после каждого хода
+                        pgn_state = 0;
+                    }
+                    console.log(result);
+                    board_arr = chess.board();
+                    console.log(board_arr);
+                    drawing_board();
+                    move();
+                    
+                    check = 0;//обнуляем нажатие
+                }
+            });
+        });
+    }
+
+    load_fen = "r2qr1k1/1Qp2ppp/p2p4/4b3/8/1PN5/P4PPP/2R1R1K1 b - - 0 1";
+    
+    var chess = new Chess();
+    chess.load(load_fen);
+    //chess.load_pgn("1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5");
+    
+    var board_arr = chess.board();
+    
+    drawing_board();
+    move();
+    
+</script>
+
+</html>
