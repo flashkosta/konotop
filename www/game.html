@@ -44,12 +44,16 @@
     var pgn_array = [];
     var pgn_history = []; //история нотации
 
+    function alertDismissed() {
+        
+    }
     
     function gameOver(why) {
         if (why == "wrong") { //неверный ход в задаче
             localStorage.task1_result = 0;
             navigator.notification.alert(
                 'Задание выполнено неверно!', // message
+                alertDismissed, // callback
                 'Game Over', // title
                 'Хорошо' // buttonName
             );
