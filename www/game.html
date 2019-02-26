@@ -24,7 +24,8 @@
     </div>
 
 </body>
-<script type="text/javascript" src="js/chess.js"></script>
+<script src="cordova.js" type="text/javascript"></script>
+<script src="js/chess.js" type="text/javascript"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="tests/test1.js"></script>
@@ -43,12 +44,12 @@
     var pgn_array = [];
     var pgn_history = []; //история нотации
 
+    
     function gameOver(why) {
         if (why == "wrong") { //неверный ход в задаче
             localStorage.task1_result = 0;
             navigator.notification.alert(
                 'Задание выполнено неверно!', // message
-                alertDismissed, // callback
                 'Game Over', // title
                 'Хорошо' // buttonName
             );
