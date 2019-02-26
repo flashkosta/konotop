@@ -13,9 +13,11 @@
 <body class="bg-light">
     <div class="container">
 
+        <!--
         <div class="mx-auto" style="width: 128px;">
             <img class="logo" src="img/logo.png">
         </div>
+        -->
 
         <div class="row">
             <div class="col-1">
@@ -23,15 +25,21 @@
 
             <div class="col-10">
 
-                <div id="hello" class="text-center mb-3">
-                    
-                </div>
+                <button id="test_select" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">
+                    <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
+                        Тест № 1
+                    </div>
+                    <div class="badge badge-light text-wrap mb-1" style="width: 11rem;">
+                        0 очков из 25 возможных
+                    </div>
+                    <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
+                        Решено: 0 из 12
+                    </div>
+                    <div class="badge badge-light text-wrap mb-1" style="width: 11rem;">
+                        Затраченное время: 00:00
+                    </div>
+                </button>
 
-                <button id="test_select" type="button" class="btn btn-info btn-lg btn-block mb-3">Выбор теста</button>
-                <button id="" type="button" class="btn btn-info btn-lg btn-block mb-3">Статистика</button>
-                <button id="" type="button" class="btn btn-info btn-lg btn-block mb-3">Настройка</button>
-                <button id="about" type="button" class="btn btn-info btn-lg btn-block mb-3">От Авторов</button>
-                <button id="exit" type="button" class="btn btn-info btn-lg btn-block mb-3">Выйти</button>
             </div>
             <div class="col-1">
 
@@ -49,18 +57,8 @@
 <script src="js/bootstrap.min.js"></script>
 
 <script>
-    $( "#hello" ).html("<h4>Привет, " + localStorage.login + "!</h4>")
-    
     $("#test_select").click(function() {
-        window.location = "select_tests.html";
-    });
-    
-    $("#about").click(function() {
-        window.location = "about.html";
-    });
-    
-    $("#exit").click(function() {
-        window.location = "index.html";
+        window.location = "game.html";
     });
 
 </script>
