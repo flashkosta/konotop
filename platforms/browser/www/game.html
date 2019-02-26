@@ -33,7 +33,7 @@
     //TODO: сделать выбор фигуры при promotion pawn
     //TODO: [x]живые нотации
     //FIXME: не удаляются одинаковые элементы в массиве ходов, поэтому при повторном хождении на одну и ту же позицию, начинают добавляться пустые DIVы
-    
+
     //объявляем переменные
     var div_name = "#board";
     var pgn_state = 0;
@@ -42,16 +42,21 @@
     var fen_array = [];
     var pgn_array = [];
     var pgn_history = []; //история нотации
-    
+
     function gameOver(why) {
-        if (why == "wrong") {//неверный ход в задаче
+        if (why == "wrong") { //неверный ход в задаче
             localStorage.task1_result = 0;
-            alert("Задание выполнено неверно.")
+            navigator.notification.alert(
+                'Задание выполнено неверно!', // message
+                alertDismissed, // callback
+                'Game Over', // title
+                'Хорошо' // buttonName
+            );
         }
     }
 
-    function game(to) {//проверка хода пользователя,
-        
+    function game(to) { //проверка хода пользователя,
+
         if (to == task_steps1[game_step]) {
             console.log("GOOD");
         } else {
@@ -59,7 +64,7 @@
             gameOver("wrong");
         }
     }
-    
+
     function PGNLive() { //живые нотации
 
         if (pgn_state == 0) {
@@ -103,8 +108,8 @@
         var coordinates;
         var coord_abc = ["a", "b", "c", "d", "e", "f", "g", "h"];
         var title = task_name1;
-        
-        $( "#title > b" ).text(task_name1);//title
+
+        $("#title > b").text(task_name1); //title
 
         $(div_name).html("");
 
