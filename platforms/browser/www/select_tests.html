@@ -29,16 +29,18 @@
                     <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
                         Тест № 1
                     </div>
-                    <div class="badge badge-light text-wrap mb-1" style="width: 11rem;">
+                    <div id="point" class="badge badge-light text-wrap mb-1" style="width: 11rem;">
                         0 очков из 25 возможных
                     </div>
                     <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
                         Решено: 0 из 12
                     </div>
-                    <div class="badge badge-light text-wrap mb-1" style="width: 11rem;">
+                    <!--<div class="badge badge-light text-wrap mb-1" style="width: 11rem;">
                         Затраченное время: 00:00
-                    </div>
+                    </div>-->
                 </button>
+                
+                <button id="menu" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">Меню</button>
 
             </div>
             <div class="col-1">
@@ -57,9 +59,21 @@
 <script src="js/bootstrap.min.js"></script>
 
 <script>
-    $("#test_select").click(function() {
-        window.location = "game.html";
+    //TEST
+    var test1_max_point = 25;
+    
+    $( "#test_select" ).click(function() {
+        window.location = "select_tests2.html";
     });
+    $("#menu").click(function() {
+        window.location = "menu.html";
+    });
+    
+    if (localStorage.test1_result) {
+        $("#point").text(localStorage.test1_result + " очков из " + test1_max_point + " возможных");
+    } else {
+        $("#point").text("0 очков из " + test1_max_point + " возможных");
+    }
 
 </script>
 

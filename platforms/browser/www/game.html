@@ -18,6 +18,7 @@
             <div class="col">
                 <div id="gameover"><span style="color: brown"></span></div>
                 <div id="turn"></div>
+                <div id="pgn_const"></div>
                 <div id="pgn"></div>
             </div>
         </div>
@@ -39,34 +40,84 @@
     var div_name = "#board";
     var pgn_state = 0;
     var game_step = 0;
+    var win = 0;
     var pgn, turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, fen_array_step, notation;
     var fen_array = [];
     var pgn_array = [];
     var pgn_history = []; //история нотации
 
     function alertDismissed() {
-        
+
     }
-    
+
     function gameOver(why) {
         if (why == "wrong") { //неверный ход в задаче
             localStorage.task1_result = 0;
             navigator.notification.alert(
                 'Задание выполнено неверно!', // message
                 alertDismissed, // callback
-                'Game Over', // title
+                'Тест завершен', // title
                 'Хорошо' // buttonName
             );
+            window.location = "select_tests2.html";
+        }
+        if (why == "good") {
+            localStorage.task1_result = task_point1; //начисляем баллы
+            localStorage.test1_result += task_point1; //добавляем к общему количеству баллов за тест
+            navigator.notification.alert(
+                'Задание выполнено верно! Поздравляем!', // message
+                alertDismissed, // callback
+                'Тест завершен', // title
+                'Хорошо' // buttonName
+            );
+            win = 1;
+
         }
     }
 
     function game(to) { //проверка хода пользователя,
+        var steps = task_steps1.length - 1; //общее количество шагов в задаче
+        console.log(steps);
+        console.log(game_step);
+        if (game_step != steps) {
+            if (to == task_steps1[game_step]) {
+                game_step++;
+                console.log("GOOD");
+            } else {
+                console.log("WRONG");
+                gameOver("wrong");
+            }
+        } else { //все ответы верные
+            gameOver("good");
+        }
+    }
 
-        if (to == task_steps1[game_step]) {
-            console.log("GOOD");
-        } else {
-            console.log("WRONG");
-            gameOver("wrong");
+    function WinPGN() { //нотация выигрыша
+        var notation;
+        if (win == 1) {
+            notation = task_notation1;
+            notation = notation.replace(/\[/gm, "<button type=\"button\" class=\"btn btn-primary btn-sm mb-1\"><b>[</b></button>");
+            notation = notation.replace(/\]/gm, "<button type=\"button\" class=\"btn btn-primary btn-sm mb-1\"><b>]</b></button>");
+            console.log(task_pgn_array1);
+            for (var i = 0; i <= task_pgn_array1.length; i++) {
+                notation = notation.replace(task_pgn_array1[i], "<div class=\"d-inline bg-warning \" id=\"stepConst" + i + "\"><button type=\"button\" class=\"btn btn-warning btn-sm mb-1\"><b>" + task_pgn_array1[i] + "</b></button></div>");
+            }
+
+            $("#pgn_const").html("<div class=\"alert alert-success\" role=\"alert\">" + notation + "</div>");
+
+            $(" #pgn_const > div > div").each(function(event) {
+                $(this).mouseup(function() {
+                    var step = $(this).attr("id").replace("stepConst", "");
+                    var pgn = "[SetUp \"1\"]\n[FEN \"" + task_fen1 + "\"]\n\n" + task_pgn_history1[step];
+                    console.log(pgn);
+                    var r = chess.load_pgn(pgn);
+                    console.log(task_pgn_history1[step]);
+                    console.log(r);
+                    board_arr = chess.board();
+                    drawing_board();
+                    move();
+                });
+            });
         }
     }
 
@@ -79,24 +130,31 @@
             notation = notation.replace(/\n/gm, "");
 
             for (var i = 0; i <= pgn_array.length; i++) {
-                notation = notation.replace(pgn_array[i], "<div class=\"d-inline bg-warning \" id=\"step" + i + "\"><button type=\"button\" class=\"btn btn-warning\">" + pgn_array[i] + "</button></div>");
+                notation = notation.replace(pgn_array[i], "<div class=\"d-inline bg-warning \" id=\"step" + i + "\"><button type=\"button\" class=\"btn btn-warning btn-sm mb-1\"><b>" + pgn_array[i] + "</b></button></div>");
             }
         }
 
-        $("#pgn").html(notation);
+        /////////////////////////////
+        if (win == 0) {
+            $("#pgn").html(notation);
+        }
+        ////////////////////////////
 
-        $(" #pgn > div").each(function(event) {
-            $(this).mouseup(function() {
-                var step = $(this).attr("id").replace("step", "");
-                fen_array_step = fen_array[step];
-                chess.load_pgn(pgn_history[step]);
-                console.log("STEP " + step);
-                pgn_state = 1
-                board_arr = chess.board();
-                drawing_board();
-                move();
+        if (win == 1) {
+            $("#pgn").html("");
+            $(" #pgn > div").each(function(event) {
+                $(this).mouseup(function() {
+                    var step = $(this).attr("id").replace("step", "");
+                    //fen_array_step = fen_array[step];
+                    chess.load_pgn(pgn_history[step]);
+                    console.log("STEP " + step);
+                    pgn_state = 1
+                    board_arr = chess.board();
+                    drawing_board();
+                    move();
+                });
             });
-        });
+        }
 
     }
 
@@ -214,6 +272,7 @@
         $("#turn").text(turn);
         //PGN
         PGNLive();
+        WinPGN();
     }
 
     function move() {
@@ -243,8 +302,9 @@
                         fen_array.push(chess.fen()); //добавляем в массив FEN каждого хода
                         pgn_array.push(result.san); //добавляем в массив единичный PGN каждого хода
                         pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
+                        console.log(pgn_history);
                         pgn_state = 0;
-                        game(result.san);
+                        if (win == 0) {game(result.san);}
                     }
                     console.log(result);
                     board_arr = chess.board();
