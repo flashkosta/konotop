@@ -11,6 +11,10 @@
 </head>
 
 <body>
+    <canvas id="canvas" style="position: absolute; z-index: 15"></canvas>
+    <div id="arrow">
+        <img src="img/arrow.png" width="45px" height="45px" />
+    </div>
     <div id="title" class="text-center"><b></b></div>
     <div id="board" class="mx-auto"></div>
     <div class="container">
@@ -30,12 +34,16 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="tests/test1.js"></script>
+<script src="js/arrow.js"></script>
 <script>
     //TODO: [x]сделать удаление fen нотации
     //TODO: сделать выбор фигуры при promotion pawn
     //TODO: [x]живые нотации
     //FIXME: не удаляются одинаковые элементы в массиве ходов, поэтому при повторном хождении на одну и ту же позицию, начинают добавляться пустые DIVы
-
+var context = canvas.getContext("2d");
+context.beginPath();
+context.arrow(0, 0, 200, 100, [0, 1, -10, 1, -10, 5]);
+context.fill();
     //объявляем переменные
     var div_name = "#board";
     var pgn_state = 0;
@@ -48,6 +56,32 @@
 
     function alertDismissed() {
 
+    }
+
+    function arrowDraw(from, to) { //#################### рисование стрелки ####################
+        var position_board = $("#board").position();
+        var square_wh = $(window).width() / 8;
+        var letters = {};
+        letters.a = 1;
+        letters.b = 2;
+        letters.c = 3;
+        letters.d = 4;
+        letters.e = 5;
+        letters.f = 6;
+        letters.g = 7;
+        letters.h = 8;
+        if (from == undefined) {
+            $("#arrow").hide();
+        } else {
+            var x_start = (letters[from[0]] * square_wh) - 45;
+            var y_start = ((9 - from[1]) * square_wh) - position_board.top;
+            var x_end = (letters[to[0]] * square_wh) - 45;
+            var y_end = ((9 - to[1]) * square_wh) - position_board.top;
+            
+            $("#arrow").css("left", x_start);
+            $("#arrow").css("top", y_start);
+            $("#arrow").show();
+        }
     }
 
     function gameOver(why) {
@@ -75,21 +109,49 @@
         }
     }
 
-    function game(to) { //проверка хода пользователя,
+    function game(to) { //проверка хода пользователя
         var steps = task_steps1.length - 1; //общее количество шагов в задаче
+        console.log("*** game() ***");
         console.log(steps);
         console.log(game_step);
-        if (game_step != steps) {
-            if (to == task_steps1[game_step]) {
-                game_step++;
-                console.log("GOOD");
-            } else {
-                console.log("WRONG");
-                gameOver("wrong");
+        console.log(to);
+        if (game_step % 2 == 0 && to != "pc") { //*************************** ход человека ***************************
+            console.log("*** USER STEP ***");
+            if (game_step != steps) {
+                if (to == task_steps1[game_step] && to != "pc") {
+                    game_step++;
+                    game("pc");
+                    console.log("GOOD");
+                } else {
+                    console.log("WRONG");
+                    gameOver("wrong");
+                }
+            } else { //все ответы верные
+                gameOver("good");
             }
-        } else { //все ответы верные
-            gameOver("good");
+            console.log("*** USER STEP END ***");
+        } else { //*************************** ход компьютера ***************************
+            console.log("*** PC STEP ***");
+            var result = chess.move(task_steps1[game_step]);
+            if (result) {
+                fen_array.push(chess.fen()); //добавляем в массив FEN каждого хода
+                pgn_array.push(result.san); //добавляем в массив единичный PGN каждого хода
+                pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
+                console.log(pgn_history);
+                arrowDraw(result.from, result.to);
+                pgn_state = 0;
+                game_step++;
+            } else {
+                console.log("ERROR 2");
+            }
+            console.log(result);
+            board_arr = chess.board();
+            console.log(board_arr);
+            drawing_board();
+            move();
+            console.log("*** PC STEP END ***");
         }
+        console.log("*** game() END ***");
     }
 
     function WinPGN() { //нотация выигрыша
@@ -161,6 +223,7 @@
     function drawing_board() { //рисуем доску
 
         var square_wh = $(window).width() / 8;
+        console.log("SQUARE WIDTH " + square_wh);
         var color_w = "bg-light";
         var color_b = "bg-info";
         var color;
@@ -278,6 +341,7 @@
     function move() {
         var from, to;
         var check = 0;
+
         $(div_name + " > table > tbody > tr > td > div").each(function(event) {
             $(this).mouseup(function() {
                 $(this).removeClass("bg-light");
@@ -304,7 +368,9 @@
                         pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
                         console.log(pgn_history);
                         pgn_state = 0;
-                        if (win == 0) {game(result.san);}
+                        if (win == 0) {
+                            game(result.san);
+                        }
                     }
                     console.log(result);
                     board_arr = chess.board();
@@ -328,6 +394,7 @@
 
     drawing_board();
     move();
+    arrowDraw()
 
 </script>
 

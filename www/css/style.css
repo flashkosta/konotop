@@ -27,3 +27,9 @@ h4 {
     margin-top: 10%;
     margin-bottom: 20%;
 }
+#arrow {
+    position: absolute; /* Абсолютное позиционирование */
+    z-index: 10;
+    top: 0;
+    left: 0;
+   }
