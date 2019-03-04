@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <canvas id="canvas" style="position: absolute; z-index: 15; width: 360px; height: 360px"></canvas>
+    <canvas id="canvas" width="360" height="360" style="position: absolute; z-index: 15"></canvas>
     <div id="title" class="text-center"><b></b></div>
     <div id="board" class="mx-auto"></div>
     <div class="container">
@@ -37,18 +37,6 @@
     //TODO: сделать выбор фигуры при promotion pawn
     //TODO: [x]живые нотации
     //FIXME: не удаляются одинаковые элементы в массиве ходов, поэтому при повторном хождении на одну и ту же позицию, начинают добавляться пустые DIVы
-    var c = document.getElementById("canvas").getContext("2d");
-    c.lineWidth = 1;
-    c.strokeStyle = "#ffffff";
-    c.fillStyle = "#ffffff";
-
-    c.setTransform(1, 0, 0, 1, 20, 0);
-
-    // small
-    c.translate(0, 40);
-    c.beginPath();
-    c.arrow(0, 0, 200, 100, [0, 1, -10, 1, -10, 5]);
-    c.fill();
     //объявляем переменные
     var div_name = "#board";
     var pgn_state = 0;
@@ -66,8 +54,8 @@
     function arrowDraw(from, to) { //#################### рисование стрелки ####################
         var position_board = $("#board").position();
         var square_wh = $(window).width() / 8;
-        $( "canvas" ).css("width", $(window).width() + "px");
-        $( "canvas" ).css("height", ((square_wh * 8) + position_board.top) + "px");
+        $("canvas").width($(window).width());
+        $("canvas").width((square_wh * 8) + position_board.top);
         var letters = {};
         letters.a = 1;
         letters.b = 2;
@@ -78,18 +66,23 @@
         letters.g = 7;
         letters.h = 8;
         if (from == undefined) {
-            //$("#canvas").hide();
+            $("#canvas").hide();
         } else {
-            var x_start = (letters[from[0]] * square_wh) - 55;
-            var y_start = ((9 - from[1]) * square_wh) - position_board.top;
-            var x_end = (letters[to[0]] * square_wh) - 55;
-            var y_end = ((9 - to[1]) * square_wh) - position_board.top;
+            var x_start = (letters[from[0]] * square_wh) - 35;
+            var y_start = ((9 - from[1]) * square_wh) - 15;
+            var x_end = (letters[to[0]] * square_wh) - 35;
+            var y_end = ((9 - to[1]) * square_wh);
             console.log(x_start, y_start, x_end, y_end);
-            $("#canvas").show();
-            var context = canvas.getContext("2d");
-            context.beginPath();
-            context.arrow(x_start, y_start, x_end, y_end, [0, 1, -10, 1, -10, 5]);
-            context.fill();
+            
+            var c = document.getElementById("canvas").getContext("2d");
+            c.strokeStyle = "#CD3749";
+            c.fillStyle = "#CD3749";
+            c.beginPath();
+            c.arrow(x_start, y_start, x_end, y_end, [0, 5, -20, 5, -20, 15]);
+            //c.arrow(203, 359, 203, 43, [0, 5, -20, 5, -20, 15]);
+            c.fill();
+            $("#canvas").fadeIn(2000);
+            $("#canvas").fadeOut(2000);
         }
     }
 
