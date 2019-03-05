@@ -11,9 +11,29 @@
 </head>
 
 <body>
-    <canvas id="canvas" width="360" height="360" style="position: absolute; z-index: 15"></canvas>
-    <div id="title" class="text-center"><b></b></div>
+    <div id="canvas_container" style="position:absolute; top:74px"><canvas id="canvas" width="360" height="360" style="position: absolute; z-index: 15"></canvas></div>
+
+    <div class="container">
+        <div class="row p-2 bg-info text-black font-weight-bold">
+            <div class="col-3 text-left">
+                <button type="button" class="btn btn-info"><img src="img/left.png" width="20"></button>
+            </div>
+            <div class="col-6 text-center">
+                <span>Тест 1/12</span><button id="exit" type="button" class="btn btn-info"><img src="img/menu2.png" width="25"></button>
+            </div>
+            <div class="col-3 text-right">
+
+                <button type="button" class="btn btn-info"><img src="img/right.png" width="20"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="title" class="text-center bg-light font-weight-bold"></div>
+
     <div id="board" class="mx-auto"></div>
+
+    <div id="win_information" class="alert alert-success" role="alert"></div>
+
     <div class="container">
         <div class="row">
             <div class="col">
@@ -34,28 +54,40 @@
 <script src="js/arrow.js"></script>
 <script>
     //TODO: [x]сделать удаление fen нотации
+    //TODO: добавить автоматический отступ от верхнего края для canvas
     //TODO: сделать выбор фигуры при promotion pawn
     //TODO: [x]живые нотации
     //FIXME: не удаляются одинаковые элементы в массиве ходов, поэтому при повторном хождении на одну и ту же позицию, начинают добавляться пустые DIVы
+    //FIXME: [x]стрелка сползает, если ширина экрана отличается от 1080
     //объявляем переменные
     var div_name = "#board";
     var pgn_state = 0;
     var game_step = 0;
     var win = 0;
-    var pgn, turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, fen_array_step, notation;
+    var pgn, turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, fen_array_step, notation, board_arr;
     var fen_array = [];
     var pgn_array = [];
     var pgn_history = []; //история нотации
+    
+    $( "#win_information" ).hide();
 
     function alertDismissed() {
 
     }
 
+    function sleep(ms) { //функция задержки
+        ms += new Date().getTime();
+        while (new Date() < ms) {}
+    }
+
     function arrowDraw(from, to) { //#################### рисование стрелки ####################
         var position_board = $("#board").position();
         var square_wh = $(window).width() / 8;
-        $("canvas").width($(window).width());
-        $("canvas").width((square_wh * 8) + position_board.top);
+
+        $("#canvas").width($(window).width());
+        $("#canvas").height($(window).width());
+        $("#canvas_container").css("top", position_board.top + "px");
+
         var letters = {};
         letters.a = 1;
         letters.b = 2;
@@ -68,44 +100,50 @@
         if (from == undefined) {
             $("#canvas").hide();
         } else {
-            var x_start = (letters[from[0]] * square_wh) - 35;
-            var y_start = ((9 - from[1]) * square_wh) - 15;
-            var x_end = (letters[to[0]] * square_wh) - 35;
-            var y_end = ((9 - to[1]) * square_wh);
+            var x_start = (letters[from[0]] * square_wh) - (square_wh / 2);
+            var y_start = ((9 - from[1]) * square_wh) - (square_wh / 2);
+            var x_end = (letters[to[0]] * square_wh) - (square_wh / 2);
+            var y_end = ((9 - to[1]) * square_wh) - (square_wh / 2);
             console.log(x_start, y_start, x_end, y_end);
-            
+
             var c = document.getElementById("canvas").getContext("2d");
             c.strokeStyle = "#CD3749";
             c.fillStyle = "#CD3749";
             c.beginPath();
             c.arrow(x_start, y_start, x_end, y_end, [0, 5, -20, 5, -20, 15]);
-            //c.arrow(203, 359, 203, 43, [0, 5, -20, 5, -20, 15]);
+            //c.arrow(90, 360, 90, 00, [0, 5, -20, 5, -20, 15]);
             c.fill();
-            $("#canvas").fadeIn(2000);
-            $("#canvas").fadeOut(2000);
+            $("#canvas").fadeIn(1000);
+            $("#canvas").fadeOut(1000);
         }
     }
 
     function gameOver(why) {
         if (why == "wrong") { //неверный ход в задаче
             localStorage.task1_result = 0;
-            navigator.notification.alert(
-                'Задание выполнено неверно!', // message
-                alertDismissed, // callback
-                'Тест завершен', // title
-                'Хорошо' // buttonName
-            );
-            window.location = "select_tests2.html";
+            //navigator.notification.alert(
+            //    'Задание выполнено неверно!', // message
+            //    alertDismissed, // callback
+            //    'Тест завершен', // title
+            //    'Хорошо' // buttonName
+            //);
+            //window.location = "select_tests2.html";
+            $( "#win_information" ).text("Задание выполнено не верно!");
+            $( "#win_information" ).toggleClass("alert-danger");
+            $( "#win_information" ).show();
+            $("#canvas").show();
         }
         if (why == "good") {
             localStorage.task1_result = task_point1; //начисляем баллы
             localStorage.test1_result += task_point1; //добавляем к общему количеству баллов за тест
-            navigator.notification.alert(
-                'Задание выполнено верно! Поздравляем!', // message
-                alertDismissed, // callback
-                'Тест завершен', // title
-                'Хорошо' // buttonName
-            );
+            //navigator.notification.alert(
+            //    'Задание выполнено верно! Поздравляем!', // message
+            //    alertDismissed, // callback
+            //    'Тест завершен', // title
+            //    'Хорошо' // buttonName
+            //);
+            $( "#win_information" ).text("Задание выполнено верно! Поздравляем");
+            $( "#win_information" ).show();
             win = 1;
 
         }
@@ -133,6 +171,7 @@
             }
             console.log("*** USER STEP END ***");
         } else { //*************************** ход компьютера ***************************
+            sleep(500);
             console.log("*** PC STEP ***");
             var result = chess.move(task_steps1[game_step]);
             if (result) {
@@ -147,10 +186,6 @@
                 console.log("ERROR 2");
             }
             console.log(result);
-            board_arr = chess.board();
-            console.log(board_arr);
-            drawing_board();
-            move();
             console.log("*** PC STEP END ***");
         }
         console.log("*** game() END ***");
@@ -177,7 +212,6 @@
                     var r = chess.load_pgn(pgn);
                     console.log(task_pgn_history1[step]);
                     console.log(r);
-                    board_arr = chess.board();
                     drawing_board();
                     move();
                 });
@@ -209,11 +243,9 @@
             $(" #pgn > div").each(function(event) {
                 $(this).mouseup(function() {
                     var step = $(this).attr("id").replace("step", "");
-                    //fen_array_step = fen_array[step];
                     chess.load_pgn(pgn_history[step]);
                     console.log("STEP " + step);
                     pgn_state = 1
-                    board_arr = chess.board();
                     drawing_board();
                     move();
                 });
@@ -223,7 +255,8 @@
     }
 
     function drawing_board() { //рисуем доску
-
+        console.log("*** DRAWING BOARD ***");
+        board_arr = chess.board();
         var square_wh = $(window).width() / 8;
         console.log("SQUARE WIDTH " + square_wh);
         var color_w = "bg-light";
@@ -237,7 +270,7 @@
         var coord_abc = ["a", "b", "c", "d", "e", "f", "g", "h"];
         var title = task_name1;
 
-        $("#title > b").text(task_name1); //title
+        $("#title").text(task_name1); //title
 
         $(div_name).html("");
 
@@ -326,7 +359,7 @@
             mess += " Пат!";
         }
 
-        $("#gameover > span").text(mess);
+        //$("#gameover > span").text(mess);
         //turn
         turn = chess.turn();
         if (turn == "b") {
@@ -334,13 +367,15 @@
         } else {
             turn = "Ход белых";
         }
-        $("#turn").text(turn);
+        //$("#turn").text(turn);
         //PGN
         PGNLive();
         WinPGN();
+        console.log("*** DRAWING BOARD END ***");
     }
 
     function move() {
+        console.log("*** MOVE ***");
         var from, to;
         var check = 0;
 
@@ -375,7 +410,6 @@
                         }
                     }
                     console.log(result);
-                    board_arr = chess.board();
                     console.log(board_arr);
                     drawing_board();
                     move();
@@ -384,6 +418,7 @@
                 }
             });
         });
+        console.log("*** MOVE END ***");
     }
 
     load_fen = task_fen1;
@@ -392,11 +427,15 @@
     chess.load(load_fen);
     //chess.load_pgn("1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5");
 
-    var board_arr = chess.board();
+
 
     drawing_board();
     move();
     arrowDraw()
+
+    $("#exit").click(function() {
+        window.location = "select_tests2.html";
+    });
 
 </script>
 
