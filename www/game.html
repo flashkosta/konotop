@@ -58,7 +58,7 @@
     //TODO: сделать выбор фигуры при promotion pawn
     //TODO: [x]живые нотации
     //FIXME: не удаляются одинаковые элементы в массиве ходов, поэтому при повторном хождении на одну и ту же позицию, начинают добавляться пустые DIVы
-    //FIXME: [x]стрелка сползает, если ширина экрана отличается от 1080
+    //FIXME: стрелка сползает, если ширина экрана отличается от 1080
     //объявляем переменные
     var div_name = "#board";
     var pgn_state = 0;
@@ -87,6 +87,11 @@
         $("#canvas").width($(window).width());
         $("#canvas").height($(window).width());
         $("#canvas_container").css("top", position_board.top + "px");
+        
+        console.log($("#canvas").width());
+        console.log($("#canvas").height());
+        console.log($("#canvas_container").css("top"));
+        console.log(position_board, square_wh);
 
         var letters = {};
         letters.a = 1;
@@ -104,7 +109,7 @@
             var y_start = ((9 - from[1]) * square_wh) - (square_wh / 2);
             var x_end = (letters[to[0]] * square_wh) - (square_wh / 2);
             var y_end = ((9 - to[1]) * square_wh) - (square_wh / 2);
-            console.log(x_start, y_start, x_end, y_end);
+            //console.log(x_start, y_start, x_end, y_end);
 
             var c = document.getElementById("canvas").getContext("2d");
             c.strokeStyle = "#CD3749";
