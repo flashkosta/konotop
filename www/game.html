@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <div id="canvas_container" style="position:absolute; top:74px"><canvas id="canvas" width="360" height="360" style="position: absolute; z-index: 15"></canvas></div>
+    <div id="canvas_container" style="position:absolute; top:79px"><img id="figure" src="img/figures/pb.png"><canvas id="canvas" width="360" height="360" style="position: absolute; z-index: 15"></canvas></div>
 
     <div class="container">
         <div class="row p-2 bg-info text-black font-weight-bold">
@@ -45,6 +45,8 @@
         </div>
     </div>
 
+    
+
 </body>
 <script src="cordova.js" type="text/javascript"></script>
 <script src="js/chess.js" type="text/javascript"></script>
@@ -58,7 +60,7 @@
     //TODO: сделать выбор фигуры при promotion pawn
     //TODO: [x]живые нотации
     //FIXME: не удаляются одинаковые элементы в массиве ходов, поэтому при повторном хождении на одну и ту же позицию, начинают добавляться пустые DIVы
-    //FIXME: стрелка сползает, если ширина экрана отличается от 1080
+    //FIXME: [x]стрелка сползает, если ширина экрана отличается от 1080
     //объявляем переменные
     var div_name = "#board";
     var pgn_state = 0;
@@ -68,8 +70,9 @@
     var fen_array = [];
     var pgn_array = [];
     var pgn_history = []; //история нотации
-    
-    $( "#win_information" ).hide();
+
+    $("#win_information").hide();
+    $("#figure").hide();
 
     function alertDismissed() {
 
@@ -80,14 +83,27 @@
         while (new Date() < ms) {}
     }
 
-    function arrowDraw(from, to) { //#################### рисование стрелки ####################
+    function figureAnimation(figure, color, size, fromX, fromY, toX, toY) { //#################### анимация фишуры при ходе компьютера ####################
+        
+        $("#figure").attr("src", "img/figures/" + figure + color + ".png");
+        $("#figure").attr("width", size);
+        $("#figure").attr("height", size);
+        $("#figure").css("left", fromX - (size / 2));
+        $("#figure").css("top", fromY - (size / 2));
+        $("#figure").fadeIn(500);
+        $("#figure").animate({left: toX - (size / 2), top: toY - (size / 2)}, 1000);
+        $("#figure").fadeOut(100);
+    }
+
+    function arrowDraw(from, to, result) { //#################### рисование стрелки ####################
+        var result = result;
         var position_board = $("#board").position();
         var square_wh = $(window).width() / 8;
 
-        $("#canvas").width($(window).width());
-        $("#canvas").height($(window).width());
+        $("#canvas").attr("width", $(window).width());
+        $("#canvas").attr("height", $(window).width());
         $("#canvas_container").css("top", position_board.top + "px");
-        
+
         console.log($("#canvas").width());
         console.log($("#canvas").height());
         console.log($("#canvas_container").css("top"));
@@ -109,15 +125,18 @@
             var y_start = ((9 - from[1]) * square_wh) - (square_wh / 2);
             var x_end = (letters[to[0]] * square_wh) - (square_wh / 2);
             var y_end = ((9 - to[1]) * square_wh) - (square_wh / 2);
-            //console.log(x_start, y_start, x_end, y_end);
+            console.log(x_start, y_start, x_end, y_end);
 
             var c = document.getElementById("canvas").getContext("2d");
             c.strokeStyle = "#CD3749";
             c.fillStyle = "#CD3749";
             c.beginPath();
             c.arrow(x_start, y_start, x_end, y_end, [0, 5, -20, 5, -20, 15]);
-            //c.arrow(90, 360, 90, 00, [0, 5, -20, 5, -20, 15]);
+            //c.arrow(225, 400, 225, 100, [0, 5, -20, 5, -20, 15]);
             c.fill();
+            
+            figureAnimation(result.piece, result.color, square_wh, x_start, y_start, x_end, y_end);
+            
             $("#canvas").fadeIn(1000);
             $("#canvas").fadeOut(1000);
         }
@@ -133,9 +152,9 @@
             //    'Хорошо' // buttonName
             //);
             //window.location = "select_tests2.html";
-            $( "#win_information" ).text("Задание выполнено не верно!");
-            $( "#win_information" ).toggleClass("alert-danger");
-            $( "#win_information" ).show();
+            $("#win_information").text("Задание выполнено не верно!");
+            $("#win_information").toggleClass("alert-danger");
+            $("#win_information").show();
             $("#canvas").show();
         }
         if (why == "good") {
@@ -147,8 +166,8 @@
             //    'Тест завершен', // title
             //    'Хорошо' // buttonName
             //);
-            $( "#win_information" ).text("Задание выполнено верно! Поздравляем");
-            $( "#win_information" ).show();
+            $("#win_information").text("Задание выполнено верно! Поздравляем");
+            $("#win_information").show();
             win = 1;
 
         }
@@ -176,7 +195,7 @@
             }
             console.log("*** USER STEP END ***");
         } else { //*************************** ход компьютера ***************************
-            sleep(500);
+            //sleep(500);
             console.log("*** PC STEP ***");
             var result = chess.move(task_steps1[game_step]);
             if (result) {
@@ -184,7 +203,7 @@
                 pgn_array.push(result.san); //добавляем в массив единичный PGN каждого хода
                 pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
                 console.log(pgn_history);
-                arrowDraw(result.from, result.to);
+                arrowDraw(result.from, result.to, result);
                 pgn_state = 0;
                 game_step++;
             } else {
