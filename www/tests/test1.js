@@ -13,3 +13,4 @@ var task_pgn_history1 = [
     "1...Bxc3 2.Rxc3? Rxe1#",
     "1...Bxc3 2.Rxe8+ 2...Qxe8"
 ];
+

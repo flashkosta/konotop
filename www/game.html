@@ -12,21 +12,18 @@
 
 <body>
     <div id="canvas_container" style="position:absolute; top:79px"><img id="figure" src="img/figures/pb.png"><canvas id="canvas" width="360" height="360" style="position: absolute; z-index: 15"></canvas></div>
-
-    <div class="container">
-        <div class="row p-2 bg-info text-black font-weight-bold">
-            <div class="col-3 text-left">
-                <button type="button" class="btn btn-info"><img src="img/left.png" width="20"></button>
-            </div>
-            <div class="col-6 text-center">
-                <span>Тест 1/12</span><button id="exit" type="button" class="btn btn-info"><img src="img/menu2.png" width="25"></button>
-            </div>
-            <div class="col-3 text-right">
-
-                <button type="button" class="btn btn-info"><img src="img/right.png" width="20"></button>
-            </div>
-        </div>
-    </div>
+    
+    <nav class="navbar navbar-light bg-primary">
+        
+        <button type="button" class="btn btn-primary ml-0 mr-auto"><img src="img/left.png" width="20"></button>
+        
+        <span class="font-weight-bold mr-5">Тест 1/12</span>
+        
+        <button id="exit" type="button" class="btn btn-primary mr-0"><img src="img/menu.png" width="20"></button>
+        
+        <button type="button" class="btn btn-primary mr-0"><img src="img/right.png" width="20"></button>
+        
+    </nav>
 
     <div id="title" class="text-center bg-light font-weight-bold"></div>
 
@@ -40,12 +37,12 @@
                 <div id="gameover"><span style="color: brown"></span></div>
                 <div id="turn"></div>
                 <div id="pgn_const"></div>
-                <div id="pgn"></div>
+                <div id="pgn" class="mt-1"></div>
             </div>
         </div>
     </div>
 
-    
+
 
 </body>
 <script src="cordova.js" type="text/javascript"></script>
@@ -66,7 +63,7 @@
     var pgn_state = 0;
     var game_step = 0;
     var win = 0;
-    var pgn, turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, fen_array_step, notation, board_arr;
+    var pgn, turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, fen_array_step, notation, board_arr, c;
     var fen_array = [];
     var pgn_array = [];
     var pgn_history = []; //история нотации
@@ -84,15 +81,18 @@
     }
 
     function figureAnimation(figure, color, size, fromX, fromY, toX, toY) { //#################### анимация фишуры при ходе компьютера ####################
-        
+
         $("#figure").attr("src", "img/figures/" + figure + color + ".png");
-        $("#figure").attr("width", size);
-        $("#figure").attr("height", size);
-        $("#figure").css("left", fromX - (size / 2));
-        $("#figure").css("top", fromY - (size / 2));
+        $("#figure").attr("width", size + 10);
+        $("#figure").attr("height", size + 10);
+        $("#figure").css("left", fromX - (size / 2) - 5);
+        $("#figure").css("top", fromY - (size / 2) - 5);
         $("#figure").fadeIn(500);
-        $("#figure").animate({left: toX - (size / 2), top: toY - (size / 2)}, 1000);
-        $("#figure").fadeOut(100);
+        $("#figure").animate({
+            left: toX - (size / 2) - 5,
+            top: toY - (size / 2) - 5
+        }, 1000).fadeOut(500);
+        //$("#figure").fadeOut(100);
     }
 
     function arrowDraw(from, to, result) { //#################### рисование стрелки ####################
@@ -121,24 +121,28 @@
         if (from == undefined) {
             $("#canvas").hide();
         } else {
+            $("#canvas").show();
             var x_start = (letters[from[0]] * square_wh) - (square_wh / 2);
             var y_start = ((9 - from[1]) * square_wh) - (square_wh / 2);
             var x_end = (letters[to[0]] * square_wh) - (square_wh / 2);
             var y_end = ((9 - to[1]) * square_wh) - (square_wh / 2);
             console.log(x_start, y_start, x_end, y_end);
 
-            var c = document.getElementById("canvas").getContext("2d");
+            var canvas = document.getElementById("canvas");
+            c = canvas.getContext("2d");//document.getElementById("canvas") ???
+            c.clearRect(0, 0, canvas.width, canvas.height);
             c.strokeStyle = "#CD3749";
             c.fillStyle = "#CD3749";
             c.beginPath();
             c.arrow(x_start, y_start, x_end, y_end, [0, 5, -20, 5, -20, 15]);
             //c.arrow(225, 400, 225, 100, [0, 5, -20, 5, -20, 15]);
             c.fill();
-            
+
             figureAnimation(result.piece, result.color, square_wh, x_start, y_start, x_end, y_end);
             
             $("#canvas").fadeIn(1000);
             $("#canvas").fadeOut(1000);
+            
         }
     }
 
@@ -155,6 +159,7 @@
             $("#win_information").text("Задание выполнено не верно!");
             $("#win_information").toggleClass("alert-danger");
             $("#win_information").show();
+            c.clearRect(0, 0, canvas.width, canvas.height);
             $("#canvas").show();
         }
         if (why == "good") {
@@ -176,13 +181,16 @@
     function game(to) { //проверка хода пользователя
         var steps = task_steps1.length - 1; //общее количество шагов в задаче
         console.log("*** game() ***");
-        console.log(steps);
-        console.log(game_step);
+        console.log("STEPS ", steps);
+        console.log("GAME STEPS ", game_step);
         console.log(to);
         if (game_step % 2 == 0 && to != "pc") { //*************************** ход человека ***************************
             console.log("*** USER STEP ***");
-            if (game_step != steps) {
+            //if (game_step != steps) {
                 if (to == task_steps1[game_step] && to != "pc") {
+                    if (game_step == steps) {//если ход верный и текущий шаг совпал с общим количеством шагов - ПОБЕДА
+                        gameOver("good");
+                    }
                     game_step++;
                     game("pc");
                     console.log("GOOD");
@@ -190,9 +198,9 @@
                     console.log("WRONG");
                     gameOver("wrong");
                 }
-            } else { //все ответы верные
-                gameOver("good");
-            }
+            //} else { //все ответы верные
+                //gameOver("good");
+            //}
             console.log("*** USER STEP END ***");
         } else { //*************************** ход компьютера ***************************
             //sleep(500);
@@ -244,26 +252,26 @@
     }
 
     function PGNLive() { //живые нотации
-
+        console.log("PGN_STATE ", pgn_state);
         if (pgn_state == 0) {
             notation = chess.pgn();
             var reg = /\[SetUp \"1\"\]\n\[FEN \"[a-z0-9/ -]+\"]/gi;
             notation = notation.replace(reg, ""); //удаляем FEN приписки
             notation = notation.replace(/\n/gm, "");
-
+            
             for (var i = 0; i <= pgn_array.length; i++) {
                 notation = notation.replace(pgn_array[i], "<div class=\"d-inline bg-warning \" id=\"step" + i + "\"><button type=\"button\" class=\"btn btn-warning btn-sm mb-1\"><b>" + pgn_array[i] + "</b></button></div>");
             }
         }
-
+        console.log("NOTATION ", notation);
         /////////////////////////////
-        if (win == 0) {
+        //if (win == 0) {
             $("#pgn").html(notation);
-        }
+        //}
         ////////////////////////////
 
         if (win == 1) {
-            $("#pgn").html("");
+            //$("#pgn").html("");
             $(" #pgn > div").each(function(event) {
                 $(this).mouseup(function() {
                     var step = $(this).attr("id").replace("step", "");
