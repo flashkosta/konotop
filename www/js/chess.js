@@ -1393,12 +1393,12 @@ var Chess = function(fen) {
         /* TODO: order of enumerated properties in header object is not
          * guaranteed, see ECMA-262 spec (section 12.6.4)
          */
-        result.push('[' + i + ' "' + header[i] + '"]' + newline);
+        //result.push('[' + i + ' "' + header[i] + '"]' + newline);
         header_exists = true;
       }
 
       if (header_exists && history.length) {
-        result.push(newline);
+        //result.push(newline);
       }
 
       /* pop all of history onto reversed_history */
