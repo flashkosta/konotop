@@ -223,7 +223,7 @@ function game(to) { //проверка хода пользователя
             pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
             console.log(pgn_history);
             arrowDraw(result.from, result.to, result);
-
+            load_pgn = undefined;
             game_step++;
         } else {
             console.log("ERROR 2");
@@ -386,7 +386,7 @@ function move() {
                     pgn_array.push(result.san); //добавляем в массив единичный PGN каждого хода
 
                     pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
-
+                    load_pgn = undefined;
                     console.log("PGN_HISTORY", pgn_history);
                     pgn_state = 0;
                     if (win == 0) {
@@ -416,6 +416,11 @@ var chess = new Chess();
 chess.load(load_fen);
 //chess.load_pgn("1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5");
 
+var txt;
+$.get("test.txt", function(txt) {
+   console.log(">>>>>>>>", txt);
+    $( "#turn" ).text(txt);
+});
 
 
 drawing_board();

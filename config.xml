@@ -25,5 +25,6 @@
     </platform>
     <plugin name="cordova-plugin-browsersync" spec="^1.1.0" />
     <plugin name="cordova-plugin-dialogs" spec="^2.0.1" />
+    <plugin name="cordova-plugin-file" spec="^6.0.1" />
     <engine name="browser" spec="^5.0.4" />
 </widget>
