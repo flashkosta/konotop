@@ -8,9 +8,7 @@
 var div_name = "#board";
 var pgn_state = 0;
 var game_step = 0;
-
 var load_pgn = undefined;
-
 var win = 0;
 var c = "";
 var del = 0;
@@ -18,9 +16,26 @@ var turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, notation, boar
 var fen_array = [];
 var pgn_array = [];
 var pgn_history = []; //история нотации
+var task = {};
 
 $("#win_information").hide();
 $("#figure").hide();
+
+function loadTest(num) { //#################### загрузка теста ####################
+    var test_name = "test" + num + ".txt";
+    var txt;
+    $.get({
+        url: "tests/" + test_name,
+        async: false
+    }, function (data){
+        txt = data;
+    });
+    var str = txt.split("\r\n");
+    task.title = str[0];
+    task.points = str[1];
+    task.fen = str[2];
+    task.steps = str[3].split(", ");
+}
 
 function PGN() { //#################### НОТАЦИИ ####################
     console.log(chess.pgn());
@@ -92,16 +107,11 @@ function figureAnimation(figure, color, size, fromX, fromY, toX, toY, to) { //##
         del = to;
     }
     $("#figure").attr("src", "img/figures/" + figure + color + ".png");
-    $("#figure").attr("width", size + 10);
-    $("#figure").attr("height", size + 10);
-    $("#figure").css("left", fromX - (size / 2) - 5);
-    $("#figure").css("top", fromY - (size / 2) - 5);
-    $("#figure").fadeIn(500);
-    $("#figure").animate({
-        left: toX - (size / 2) - 5,
-        top: toY - (size / 2) - 5
-    }, 1000).fadeOut(500);
-    //$("#figure").fadeOut(100);
+    $("#figure").attr("width", size - 5);
+    $("#figure").attr("height", size - 5);
+    $("#figure").css("left", fromX - (size / 2) + 2.5);
+    $("#figure").css("top", fromY - (size / 2) + 2.5);
+    $("#figure").show().animate({left: toX - (size / 2) + 2.5,top: toY - (size / 2) + 2.5}, 1000).fadeOut(50);
 }
 
 function arrowDraw(from, to, result) { //#################### рисование стрелки ####################
@@ -158,13 +168,7 @@ function arrowDraw(from, to, result) { //#################### рисование
 function gameOver(why) {
     if (why == "wrong") { //неверный ход в задаче
         localStorage.task1_result = 0;
-        //navigator.notification.alert(
-        //    'Задание выполнено неверно!', // message
-        //    alertDismissed, // callback
-        //    'Тест завершен', // title
-        //    'Хорошо' // buttonName
-        //);
-        //window.location = "select_tests2.html";
+
         $("#win_information").text("Задание выполнено не верно!");
         $("#win_information").toggleClass("alert-danger");
         $("#win_information").show();
@@ -174,14 +178,9 @@ function gameOver(why) {
         $("#canvas").show();
     }
     if (why == "good") {
-        localStorage.task1_result = task_point1; //начисляем баллы
-        localStorage.test1_result += task_point1; //добавляем к общему количеству баллов за тест
-        //navigator.notification.alert(
-        //    'Задание выполнено верно! Поздравляем!', // message
-        //    alertDismissed, // callback
-        //    'Тест завершен', // title
-        //    'Хорошо' // buttonName
-        //);
+        localStorage.task1 = task.points; //начисляем баллы
+        localStorage.test1 += task.points; //добавляем к общему количеству баллов за тест
+
         $("#win_information").text("Задание выполнено верно! Поздравляем");
         $("#win_information").show();
         win = 1;
@@ -190,7 +189,7 @@ function gameOver(why) {
 }
 
 function game(to) { //проверка хода пользователя
-    var steps = task_steps1.length - 1; //общее количество шагов в задаче
+    var steps = task.steps.length - 1; //общее количество шагов в задаче
     console.log("*** game() ***");
     console.log("STEPS ", steps);
     console.log("GAME STEPS ", game_step);
@@ -198,7 +197,7 @@ function game(to) { //проверка хода пользователя
     if (game_step % 2 == 0 && to != "pc") { //*************************** ход человека ***************************
         console.log("*** USER STEP ***");
         //if (game_step != steps) {
-        if (to == task_steps1[game_step] && to != "pc") {
+        if (to == task.steps[game_step] && to != "pc") {
             if (game_step == steps) { //если ход верный и текущий шаг совпал с общим количеством шагов - ПОБЕДА
                 gameOver("good");
             }
@@ -216,7 +215,7 @@ function game(to) { //проверка хода пользователя
     } else { //*************************** ход компьютера ***************************
         //sleep(500);
         console.log("*** PC STEP ***");
-        var result = chess.move(task_steps1[game_step]);
+        var result = chess.move(task.steps[game_step]);
         if (result) {
             fen_array.push(chess.fen()); //добавляем в массив FEN каждого хода
             pgn_array.push(result.san); //добавляем в массив единичный PGN каждого хода
@@ -248,9 +247,8 @@ function drawing_board() { //рисуем доску
     var figure;
     var coordinates;
     var coord_abc = ["a", "b", "c", "d", "e", "f", "g", "h"];
-    var title = task_name1;
 
-    $("#title").text(task_name1); //title
+    $("#title").text(task.title); //title
 
     $(div_name).html("");
 
@@ -397,8 +395,7 @@ function move() {
                 console.log(board_arr);
                 drawing_board();
                 if (del != 0) {
-                    $("#" + del + " > img").hide();
-                    $("#" + del + " > img").fadeIn(3200);
+                    $("#" + del + " > img").hide().delay(1000).fadeIn(50);
                     del = 0;
                 }
                 move();
@@ -410,18 +407,11 @@ function move() {
     console.log("*** MOVE END ***");
 }
 
-load_fen = task_fen1;
+loadTest(1);
 
 var chess = new Chess();
-chess.load(load_fen);
+chess.load(task.fen);
 //chess.load_pgn("1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5");
-
-var txt;
-$.get("test.txt", function(txt) {
-   console.log(">>>>>>>>", txt);
-    $( "#turn" ).text(txt);
-});
-
 
 drawing_board();
 move();

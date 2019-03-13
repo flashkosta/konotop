@@ -15,9 +15,6 @@
     },
     "cordova-plugin-dialogs": {
       "PACKAGE_NAME": "konotop"
-    },
-    "cordova-plugin-file": {
-      "PACKAGE_NAME": "konotop"
     }
   },
   "dependent_plugins": {}
