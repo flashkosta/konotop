@@ -12,11 +12,15 @@ var load_pgn = undefined;
 var win = 0;
 var c = "";
 var del = 0;
-var turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, notation, board_arr;
+var turn, if_gameover, if_check, if_mate, if_stalemate, load_fen, board_arr;
 var fen_array = [];
 var pgn_array = [];
 var pgn_history = []; //история нотации
 var task = {};
+
+var id = 0;
+var old_pgn;
+var pgnPosition;
 
 $("#win_information").hide();
 $("#figure").hide();
@@ -27,7 +31,7 @@ function loadTest(num) { //#################### загрузка теста ####
     $.get({
         url: "tests/" + test_name,
         async: false
-    }, function (data){
+    }, function (data) {
         txt = data;
     });
     var str = txt.split("\r\n");
@@ -37,14 +41,49 @@ function loadTest(num) { //#################### загрузка теста ####
     task.steps = str[3].split(", ");
 }
 
-function PGN() { //#################### НОТАЦИИ ####################
-    console.log(chess.pgn());
-    console.log("PGN_ARRAY ", pgn_array);
-    console.log("PGN_STATE ", pgn_state);
+function PGN2() {
+    var parentDiv = "pgn2";
+    
+    if (old_pgn == null) {
+        var notation = chess.pgn();
+        old_pgn = chess.pgn();
+    } else {
+        var notation = chess.pgn().replace(old_pgn, "");
+        old_pgn = chess.pgn();
+    }
+    if (pgnPosition != null) {
+        parentDiv = pgnPosition;
+        console.log("***********************************", pgnPosition, parseInt(pgnPosition) + 1);
+        $( "#" + pgnPosition ).append(" [ ");
+        $( "#1").append(" ] ");
+    }
+    
+    console.log("PARENT DIV ", parentDiv);
+    $("#" + parentDiv).append("<div id=\"" + id + "\" style=\"display: inline\">" + notation + "</div>");
+    id++;
+    hooksFrom = "";
+    hooksTo = "";
+    
+    $(" #pgn2 > div").each(function (event) {
+        $(this).mouseup(function () {
+            var step = $(this).attr("id");
+            chess.load(fen_array[step]);
+            pgnPosition = step;
+            pgn_state = 1
+            drawing_board();
+            move();
+        });
+    });
+}
+
+/*function PGN() { //#################### НОТАЦИИ ####################
+    //console.log(chess.pgn());
+    //console.log("PGN_ARRAY ", pgn_array);
+    //console.log("PGN_STATE ", pgn_state);
     var step2 = 0;
 
     if (pgn_state == 0) {
-        notation = chess.pgn();
+        var notation = chess.pgn();
 
         function replacer(str, offset, s) {
             notation = notation.replace(str, "<div style=\"display: inline\" id=\"" + step2 + "\">" + str + "</div>");
@@ -99,7 +138,7 @@ function PGN() { //#################### НОТАЦИИ ####################
             move();
         }
     });
-}
+}*/
 
 function figureAnimation(figure, color, size, fromX, fromY, toX, toY, to) { //#################### анимация фишуры при ходе компьютера ####################
     var sq = chess.get(to);
@@ -111,7 +150,10 @@ function figureAnimation(figure, color, size, fromX, fromY, toX, toY, to) { //##
     $("#figure").attr("height", size - 5);
     $("#figure").css("left", fromX - (size / 2) + 2.5);
     $("#figure").css("top", fromY - (size / 2) + 2.5);
-    $("#figure").show().animate({left: toX - (size / 2) + 2.5,top: toY - (size / 2) + 2.5}, 1000).fadeOut(50);
+    $("#figure").show().animate({
+        left: toX - (size / 2) + 2.5,
+        top: toY - (size / 2) + 2.5
+    }, 1000).fadeOut(50);
 }
 
 function arrowDraw(from, to, result) { //#################### рисование стрелки ####################
@@ -123,10 +165,10 @@ function arrowDraw(from, to, result) { //#################### рисование
     $("#canvas").attr("height", $(window).width());
     $("#canvas_container").css("top", position_board.top + "px");
 
-    console.log($("#canvas").width());
-    console.log($("#canvas").height());
-    console.log($("#canvas_container").css("top"));
-    console.log(position_board, square_wh);
+    //console.log($("#canvas").width());
+    //console.log($("#canvas").height());
+    //console.log($("#canvas_container").css("top"));
+    //console.log(position_board, square_wh);
 
     var letters = {};
     letters.a = 1;
@@ -145,7 +187,7 @@ function arrowDraw(from, to, result) { //#################### рисование
         var y_start = ((9 - from[1]) * square_wh) - (square_wh / 2);
         var x_end = (letters[to[0]] * square_wh) - (square_wh / 2);
         var y_end = ((9 - to[1]) * square_wh) - (square_wh / 2);
-        console.log(x_start, y_start, x_end, y_end);
+        //console.log(x_start, y_start, x_end, y_end);
 
         var canvas = document.getElementById("canvas");
         c = canvas.getContext("2d"); //document.getElementById("canvas") ???
@@ -190,12 +232,12 @@ function gameOver(why) {
 
 function game(to) { //проверка хода пользователя
     var steps = task.steps.length - 1; //общее количество шагов в задаче
-    console.log("*** game() ***");
+    //console.log("*** game() ***");
     console.log("STEPS ", steps);
     console.log("GAME STEPS ", game_step);
-    console.log(to);
+    //console.log(to);
     if (game_step % 2 == 0 && to != "pc") { //*************************** ход человека ***************************
-        console.log("*** USER STEP ***");
+        //console.log("*** USER STEP ***");
         //if (game_step != steps) {
         if (to == task.steps[game_step] && to != "pc") {
             if (game_step == steps) { //если ход верный и текущий шаг совпал с общим количеством шагов - ПОБЕДА
@@ -203,41 +245,42 @@ function game(to) { //проверка хода пользователя
             }
             game_step++;
             game("pc");
-            console.log("GOOD");
+            //console.log("GOOD");
         } else {
-            console.log("WRONG");
+            //console.log("WRONG");
             gameOver("wrong");
         }
         //} else { //все ответы верные
         //gameOver("good");
         //}
-        console.log("*** USER STEP END ***");
+        //console.log("*** USER STEP END ***");
     } else { //*************************** ход компьютера ***************************
         //sleep(500);
         console.log("*** PC STEP ***");
         var result = chess.move(task.steps[game_step]);
         if (result) {
+            PGN2();
             fen_array.push(chess.fen()); //добавляем в массив FEN каждого хода
             pgn_array.push(result.san); //добавляем в массив единичный PGN каждого хода
             pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
-            console.log(pgn_history);
+            //console.log(pgn_history);
             arrowDraw(result.from, result.to, result);
             load_pgn = undefined;
             game_step++;
         } else {
             console.log("ERROR 2");
         }
-        console.log(result);
+        console.log("PC ", result);
         console.log("*** PC STEP END ***");
     }
-    console.log("*** game() END ***");
+    //console.log("*** game() END ***");
 }
 
 function drawing_board() { //рисуем доску
-    console.log("*** DRAWING BOARD ***");
+    //console.log("*** DRAWING BOARD ***");
     board_arr = chess.board();
     var square_wh = $(window).width() / 8;
-    console.log("SQUARE WIDTH " + square_wh);
+    //console.log("SQUARE WIDTH " + square_wh);
     var color_w = "bg-light";
     var color_b = "bg-info";
     var color;
@@ -347,14 +390,15 @@ function drawing_board() { //рисуем доску
     }
     //$("#turn").text(turn);
     //PGN
-    PGN();
+    //PGN();
+
     //PGNLive();
     //WinPGN();
-    console.log("*** DRAWING BOARD END ***");
+    //console.log("*** DRAWING BOARD END ***");
 }
 
 function move() {
-    console.log("*** MOVE ***");
+    //console.log("*** MOVE ***");
     var from, to;
     var check = 0;
 
@@ -378,21 +422,21 @@ function move() {
                     to: to,
                     promotion: "q"
                 });
+
                 if (result) {
+                    PGN2();
                     fen_array.push(chess.fen()); //добавляем в массив FEN каждого хода
-
                     pgn_array.push(result.san); //добавляем в массив единичный PGN каждого хода
-
                     pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
                     load_pgn = undefined;
-                    console.log("PGN_HISTORY", pgn_history);
+                    //console.log("PGN_HISTORY", pgn_history);
                     pgn_state = 0;
                     if (win == 0) {
                         game(result.san);
                     }
                 }
-                console.log(result);
-                console.log(board_arr);
+                console.log("USER ", result);
+                //console.log(board_arr);
                 drawing_board();
                 if (del != 0) {
                     $("#" + del + " > img").hide().delay(1000).fadeIn(50);
@@ -404,10 +448,10 @@ function move() {
             }
         });
     });
-    console.log("*** MOVE END ***");
+    //console.log("*** MOVE END ***");
 }
 
-loadTest(1);
+loadTest(2);
 
 var chess = new Chess();
 chess.load(task.fen);
