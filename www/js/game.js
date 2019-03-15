@@ -21,6 +21,8 @@ var task = {};
 var id = 0;
 var old_pgn;
 var pgnPosition;
+var pgnArray = [];
+var fenArray = [];
 
 $("#win_information").hide();
 $("#figure").hide();
@@ -41,9 +43,12 @@ function loadTest(num) { //#################### загрузка теста ####
     task.steps = str[3].split(", ");
 }
 
-function PGN2() {
-    var parentDiv = "pgn2";
-    
+function PGN2() { //#################### НОТАЦИИ v2.0 ####################
+    var parentDiv = "";
+    var notationPCRE = "x";
+    var pgnArrayPCRE = "y";
+    var hooksFrom = "";
+
     if (old_pgn == null) {
         var notation = chess.pgn();
         old_pgn = chess.pgn();
@@ -51,94 +56,70 @@ function PGN2() {
         var notation = chess.pgn().replace(old_pgn, "");
         old_pgn = chess.pgn();
     }
-    if (pgnPosition != null) {
+    if (pgnPosition != null && pgn_state == 1) {
         parentDiv = pgnPosition;
-        console.log("***********************************", pgnPosition, parseInt(pgnPosition) + 1);
-        $( "#" + pgnPosition ).append(" [ ");
-        $( "#1").append(" ] ");
     }
-    
-    console.log("PARENT DIV ", parentDiv);
-    $("#" + parentDiv).append("<div id=\"" + id + "\" style=\"display: inline\">" + notation + "</div>");
-    id++;
-    hooksFrom = "";
-    hooksTo = "";
-    
+    if (pgnPosition != null && pgn_state == 0) {
+        parentDiv = id - 1;
+        console.log("rrrrrrr", parentDiv);
+    }
+
+    console.log("--------- start ----------");
+    console.log(fenArray);
+    console.log(pgnArray);
+    console.log(pgnPosition);
+    console.log(parentDiv);
+    console.log(pgnArray[parseInt(pgnPosition) + 1]);
+    console.log(notation, pgnArray[parseInt(pgnPosition) + 1]);
+    console.log("--------- end ----------");
+
+    if (pgnArray[parseInt(pgnPosition) + 1] != undefined) {
+        notationPCRE = notation.match(/[a-zA-Z0-9\+\#]{2,6}/);
+        pgnArrayPCRE = pgnArray[parseInt(pgnPosition) + 1].match(/[a-zA-Z0-9\+\#]{2,6}/);
+    }
+
+    if (notationPCRE == null || notationPCRE[0] == pgnArrayPCRE[0]) {
+        console.log("повтор!");
+    }
+    if (notationPCRE != null && notationPCRE[0] != pgnArrayPCRE[0]) {
+        if (parentDiv == "") {
+            $("#pgn2").append("<div id=\"" + id + "\" style=\"display: inline\"> " + notation + " </div>");
+        }
+        if (parentDiv != "") {
+            if (pgn_state == 1) {
+                hooksFrom = " [ ";
+                var tmp_text = $("#" + String(Number(parentDiv) + 1)).text();
+                $("#" + String(Number(parentDiv) + 1)).text(" ] " + tmp_text);
+                pgn_state = 0;
+            }
+            $("#" + parentDiv).after(hooksFrom + "<div id=\"" + id + "\" style=\"display: inline\"> " + notation + " </div>");
+        }
+        id++;
+        pgnArray.push(notation);
+        fenArray.push(chess.fen());
+    }
+
     $(" #pgn2 > div").each(function (event) {
+        $(this).unbind();
         $(this).mouseup(function () {
+            $(" #pgn2 > div").removeClass("bg-warning");
+            $(this).addClass("bg-warning");
             var step = $(this).attr("id");
-            chess.load(fen_array[step]);
-            pgnPosition = step;
-            pgn_state = 1
+            console.log("LOAD ", step);
+            console.log("LOAD ", id);
+            console.log("LOAD ", fenArray[step]);
+            chess.load(fenArray[step]);
+            if (step != id - 1) {
+                pgnPosition = step;
+                pgn_state = 1
+            }
+            console.log(pgn_state);
             drawing_board();
             move();
+
         });
     });
 }
-
-/*function PGN() { //#################### НОТАЦИИ ####################
-    //console.log(chess.pgn());
-    //console.log("PGN_ARRAY ", pgn_array);
-    //console.log("PGN_STATE ", pgn_state);
-    var step2 = 0;
-
-    if (pgn_state == 0) {
-        var notation = chess.pgn();
-
-        function replacer(str, offset, s) {
-            notation = notation.replace(str, "<div style=\"display: inline\" id=\"" + step2 + "\">" + str + "</div>");
-            step2++;
-        }
-        var reg = /[\w\+\#]{2,7}/g;
-        notation.replace(reg, replacer);
-    }
-
-    $("#pgn").html(notation);
-
-    $(" #pgn > div").each(function (event) {
-        $(this).mouseup(function () {
-            var step = $(this).attr("id");
-            chess.load(fen_array[step]);
-            //console.log("LOAD STEP " + step);
-            load_pgn = step;
-            pgn_state = 1
-            drawing_board();
-            move();
-        });
-    });
-
-    $("#prev").unbind();
-    $("#prev").mouseup(function () {
-        if (load_pgn == undefined) {
-            load_pgn = fen_array.length - 1;
-        }
-        if (load_pgn > 0) {
-            chess.load(fen_array[load_pgn - 1]);
-            load_pgn--;
-            pgn_state = 1
-            drawing_board();
-            move();
-        } else {
-            chess.load(task_fen1);
-            pgn_state = 1
-            load_pgn = -1;
-            drawing_board();
-            move();
-        }
-    });
-
-    $("#next").unbind();
-    $("#next").mouseup(function () {
-        if (load_pgn < fen_array.length - 1) {
-            //console.log("LOAD PGN", load_pgn);
-            chess.load(fen_array[load_pgn + 1]);
-            load_pgn++;
-            pgn_state = 1
-            drawing_board();
-            move();
-        }
-    });
-}*/
 
 function figureAnimation(figure, color, size, fromX, fromY, toX, toY, to) { //#################### анимация фишуры при ходе компьютера ####################
     var sq = chess.get(to);
@@ -430,7 +411,7 @@ function move() {
                     pgn_history.push(chess.pgn()); //добавляем в массив PGN нотацию после каждого хода
                     load_pgn = undefined;
                     //console.log("PGN_HISTORY", pgn_history);
-                    pgn_state = 0;
+                    //pgn_state = 0;
                     if (win == 0) {
                         game(result.san);
                     }
@@ -451,7 +432,7 @@ function move() {
     //console.log("*** MOVE END ***");
 }
 
-loadTest(2);
+loadTest(1);
 
 var chess = new Chess();
 chess.load(task.fen);
