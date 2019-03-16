@@ -3,7 +3,7 @@
   "display": "standalone",
   "name": "Konotop Tests",
   "short_name": "Konotop Tests",
-  "version": "konotop",
+  "version": "com.konotop.konotop",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
   "author": "Apache Cordova Team",
   "icons": [],

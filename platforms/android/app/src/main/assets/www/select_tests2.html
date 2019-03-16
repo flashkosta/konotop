@@ -1,0 +1,73 @@
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Chess v0.1</title>
+</head>
+
+<body class="bg-light">
+    <div class="container">
+
+        <!--
+        <div class="mx-auto" style="width: 128px;">
+            <img class="logo" src="img/logo.png">
+        </div>
+        -->
+
+        <div class="row">
+            <div class="col-1">
+            </div>
+
+            <div class="col-10">
+
+                <button id="task1" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">
+                    <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
+                        Тест № 1
+                    </div>
+                </button>
+                
+                <button id="menu" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">Меню</button>
+
+            </div>
+            <div class="col-1">
+
+            </div>
+        </div>
+
+        <div class="fixed-bottom text-center">
+            <h4>С.В. Конотоп &copy;</h4>
+        </div>
+
+    </div>
+</body>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+    $("#task1").click(function() {
+        window.location = "game.html";
+    });
+    $("#menu").click(function() {
+        window.location = "select_tests.html";
+    });
+    
+    if (localStorage.task1_result) {
+        if (localStorage.task1_result == 0) {
+            $("#task1 > div").removeClass("badge-warning");
+            $("#task1 > div").addClass("badge-danger");
+        } else {
+            $("#task1 > div").removeClass("badge-danger");
+            $("#task1 > div").removeClass("badge-warning");
+            $("#task1 > div").addClass("badge-success"); 
+        }
+    }
+
+</script>
+
+</html>

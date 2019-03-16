@@ -32,10 +32,18 @@ function loadTest(num) { //#################### загрузка теста ####
     var txt;
     $.get({
         url: "tests/" + test_name,
-        async: false
-    }, function (data) {
-        txt = data;
-    });
+        async: false,
+        statusCode: {
+            404: function () {
+                $("#error").append(" code 404 ");
+            }
+        }
+        }, function (data) {
+            txt = data;
+        })
+        .fail(function () {
+            $("#error").append(" error open file from tests! ");
+        });
     var str = txt.split("\r\n");
     task.title = str[0];
     task.points = str[1];
