@@ -25,36 +25,21 @@ function loadTest(num) { //#################### загрузка теста ####
     var test_name = "test" + num + ".txt";
     var txt;
     $.ajax({
-        url: "tests/test1.txt",
+        url: "tests/" + test_name,
         async: false,
         success: function (data){
             txt = data;
         }
     });
-    $( "#error" ).text(txt);
-    /*$.get({
-        url: "tests/" + test_name,
-        async: false,
-        statusCode: {
-            404: function () {
-                $("#error").append(" code 404 ");
-            }
-        }
-        }, function (data) {
-            txt = data;
-        })
-        .fail(function () {
-            $("#error").append(" error open file from tests! ");
-        });
     var str = txt.split("\r\n");
     task.title = str[0];
     task.points = str[1];
     task.fen = str[2];
-    task.steps = str[3].split(", ");*/
-    task.title = "Бабцик - Лидер, Оберхоф, 1999";
-    task.points = 3;
-    task.fen = "r2qr1k1/1Qp2ppp/p2p4/4b3/8/1PN5/P4PPP/2R1R1K1 b - - 0 1";
-    task.steps = "Bxc3, Rxe8+, Qxe8".split(", ");  
+    task.steps = str[3].split(", ");
+    //task.title = "Бабцик - Лидер, Оберхоф, 1999";
+    //task.points = 3;
+    //task.fen = "r2qr1k1/1Qp2ppp/p2p4/4b3/8/1PN5/P4PPP/2R1R1K1 b - - 0 1";
+    //task.steps = "Bxc3, Rxe8+, Qxe8".split(", ");  
 }
 
 function PGN2() { //#################### НОТАЦИИ v2.0 ####################
