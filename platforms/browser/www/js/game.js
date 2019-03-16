@@ -28,9 +28,10 @@ function loadTest(num) { //#################### загрузка теста ####
         url: "tests/test1.txt",
         async: false,
         success: function (data){
-            $( "#error" ).text(data);
+            txt = data;
         }
     });
+    $( "#error" ).text(txt);
     /*$.get({
         url: "tests/" + test_name,
         async: false,
