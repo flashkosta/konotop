@@ -1,9 +1,3 @@
-//TODO: [x]сделать удаление fen нотации
-//TODO: добавить автоматический отступ от верхнего края для canvas
-//TODO: сделать выбор фигуры при promotion pawn
-//TODO: [x]живые нотации
-//FIXME: не удаляются одинаковые элементы в массиве ходов, поэтому при повторном хождении на одну и ту же позицию, начинают добавляться пустые DIVы
-//FIXME: [x]стрелка сползает, если ширина экрана отличается от 1080
 //объявляем переменные
 var div_name = "#board";
 var pgn_state = 0;
@@ -73,7 +67,6 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
     }
     if (pgnPosition != null && pgn_state == 0) {
         parentDiv = id - 1;
-        console.log("rrrrrrr", parentDiv);
     }
 
     console.log("--------- start ----------");
@@ -85,20 +78,22 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
     console.log(notation, pgnArray[parseInt(pgnPosition) + 1]);
     console.log("--------- end ----------");
 
-    if (pgnArray[parseInt(pgnPosition) + 1] != undefined) {
+    if (pgnArray[parseInt(pgnPosition) + 1] != undefined) {//проверяем - есть ли след за ткущим ход в истории от текущей позиции в нотации, заносим в переменную
         notationPCRE = notation.match(/[a-zA-Z0-9\+\#]{2,6}/);
         pgnArrayPCRE = pgnArray[parseInt(pgnPosition) + 1].match(/[a-zA-Z0-9\+\#]{2,6}/);
     }
 
-    if (notationPCRE == null || notationPCRE[0] == pgnArrayPCRE[0]) {
+    if (notationPCRE == null || notationPCRE[0] == pgnArrayPCRE[0]) {//текущий ход совпал со след. ходом в истории
         console.log("повтор!");
+        pgnPosition++;
+        pgn_state = 0;
     }
-    if (notationPCRE != null && notationPCRE[0] != pgnArrayPCRE[0]) {
-        if (parentDiv == "") {
+    if (notationPCRE != null && notationPCRE[0] != pgnArrayPCRE[0]) {//новый ход, текущий не совпал со след. в истории
+        if (parentDiv == "") {//parenDiv равен пустоте, значит нотация без подвариантов
             $("#pgn2").append("<div id=\"" + id + "\" style=\"display: inline\"> " + notation + " </div>");
         }
-        if (parentDiv != "") {
-            if (pgn_state == 1) {
+        if (parentDiv != "") {//parenDiv определен, подвариант есть
+            if (pgn_state == 1) {//пользователь нажал на что то в нотаци
                 hooksFrom = " [ ";
                 var tmp_text = $("#" + String(Number(parentDiv) + 1)).text();
                 $("#" + String(Number(parentDiv) + 1)).text(" ] " + tmp_text);
@@ -117,8 +112,8 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
             $(" #pgn2 > div").removeClass("bg-warning");
             $(this).addClass("bg-warning");
             var step = $(this).attr("id");
-            console.log("LOAD ", step);
-            console.log("LOAD ", id);
+            console.log("STEP ", step);
+            console.log("ID ", id);
             console.log("LOAD ", fenArray[step]);
             chess.load(fenArray[step]);
             if (step != id - 1) {
