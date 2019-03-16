@@ -24,6 +24,9 @@ $("#figure").hide();
 function loadTest(num) { //#################### загрузка теста ####################
     var test_name = "test" + num + ".txt";
     var txt;
+    $.get("1.txt", function(data) {
+        $( "#error" ).text(data);
+    });
     /*$.get({
         url: "tests/" + test_name,
         async: false,
