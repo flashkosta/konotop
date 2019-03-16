@@ -25,7 +25,7 @@ function loadTest(num) { //#################### загрузка теста ####
     var test_name = "test" + num + ".txt";
     var txt;
     $.ajax({
-        url: "1.txt",
+        url: "tests/test1.txt",
         async: false,
         success: function (data){
             $( "#error" ).text(data);
