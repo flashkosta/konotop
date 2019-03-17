@@ -31,12 +31,16 @@ function loadTest(num) { //#################### загрузка теста ####
             txt = data;
         }
     });
-    $( "#error" ).text(txt);
-    var str = txt.split("; ");
+    
+    var str = txt.toString();
+    str = str.split(";");
     
     task.title = str[0];
+    str[1] = str[1].replace("\r\n", "");
     task.points = str[1];
+    str[2] = str[2].replace("\r\n", "");
     task.fen = str[2];
+    str[3] = str[3].replace("\r\n", "");
     task.steps = str[3].split(", ");
 
     //task.title = "Бабцик - Лидер, Оберхоф, 1999";
