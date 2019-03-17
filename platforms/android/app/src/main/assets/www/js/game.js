@@ -36,13 +36,14 @@ function loadTest(num) { //#################### загрузка теста ####
     str = str.split(";");
     
     task.title = str[0];
-    str[1] = str[1].replace("\r\n", "");
+    str[1] = str[1].replace("\u000d\u000a", "");
     task.points = str[1];
-    str[2] = str[2].replace("\r\n", "");
+    str[2] = str[2].replace("\u000d\u000a", "");
     task.fen = str[2];
-    str[3] = str[3].replace("\r\n", "");
+    str[3] = str[3].replace("\u000d\u000a", "");
     task.steps = str[3].split(", ");
 
+    
     //task.title = "Бабцик - Лидер, Оберхоф, 1999";
     //task.points = 3;
     //task.fen = "r2qr1k1/1Qp2ppp/p2p4/4b3/8/1PN5/P4PPP/2R1R1K1 b - - 0 1";
