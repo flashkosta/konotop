@@ -31,6 +31,7 @@ function loadTest(num) { //#################### загрузка теста ####
             txt = data;
         }
     });
+    $( "#error" ).text(txt);
     var str = txt.split("\r\n");
     task.title = str[0];
     task.points = str[1];
