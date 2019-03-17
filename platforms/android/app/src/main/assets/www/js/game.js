@@ -32,7 +32,7 @@ function loadTest(num) { //#################### загрузка теста ####
         }
     });
     var str = txt.split("\r\n");
-    $( "#error" ).text(str[0]);
+    $( "#error" ).text(str[1]);
     task.title = str[0];
     task.points = str[1];
     task.fen = str[2];
