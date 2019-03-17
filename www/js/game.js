@@ -31,16 +31,18 @@ function loadTest(num) { //#################### загрузка теста ####
             txt = data;
         }
     });
+    $( "#error" ).text(txt);
     var str = txt.split("; ");
     
     task.title = str[0];
     task.points = str[1];
     task.fen = str[2];
     task.steps = str[3].split(", ");
+
     //task.title = "Бабцик - Лидер, Оберхоф, 1999";
     //task.points = 3;
     //task.fen = "r2qr1k1/1Qp2ppp/p2p4/4b3/8/1PN5/P4PPP/2R1R1K1 b - - 0 1";
-    //task.steps = "Bxc3, Rxe8+, Qxe8".split(", ");  
+    //task.steps = "Bxc3, Rxe8+, Qxe8".split(", "); 
 }
 
 function PGN2() { //#################### НОТАЦИИ v2.0 ####################
