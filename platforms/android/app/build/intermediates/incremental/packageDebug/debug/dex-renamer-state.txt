@@ -1,4 +1,4 @@
-#Mon Mar 18 21:55:42 MSK 2019
+#Tue Mar 19 01:20:29 MSK 2019
 base.0=C\:\\CORDOVA\\konotop\\platforms\\android\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
 path.0=classes.dex
 renamed.0=classes.dex

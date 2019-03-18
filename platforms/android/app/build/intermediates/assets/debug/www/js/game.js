@@ -22,7 +22,7 @@ $("#win_information").hide();
 $("#figure").hide();
 
 function loadTest(num) { //#################### загрузка теста ####################
-    var test_name = "test" + num + ".txt";
+    var test_name = "test" + num + ".json";
     var txt;
     $.ajax({
         url: "tests/" + test_name,
@@ -32,15 +32,9 @@ function loadTest(num) { //#################### загрузка теста ####
         }
     });
     
-    str = txt.split(0x0d,0x0a);
-    console.log(txt);
-    console.log(str);
-    
-    task.title = str[0];
-    task.points = str[1];
-    task.fen = str[2];
-    task.steps = str[3].split(", ");
-
+    task = JSON.parse(txt);
+    //console.log(task);
+    task.steps = task.steps.split(", ");
     //task.title = "Бабцик - Лидер, Оберхоф, 1999";
     //task.points = 3;
     //task.fen = "r2qr1k1/1Qp2ppp/p2p4/4b3/8/1PN5/P4PPP/2R1R1K1 b - - 0 1";
