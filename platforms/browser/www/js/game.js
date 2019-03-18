@@ -22,7 +22,7 @@ $("#win_information").hide();
 $("#figure").hide();
 
 function loadTest(num) { //#################### загрузка теста ####################
-    var test_name = "test" + num + ".txt";
+    var test_name = "test" + num + ".json";
     var txt;
     $.ajax({
         url: "tests/" + test_name,
