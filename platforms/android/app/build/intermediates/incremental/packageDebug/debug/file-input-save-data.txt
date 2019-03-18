@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Mon Mar 18 20:32:49 MSK 2019
+#Mon Mar 18 21:55:42 MSK 2019
 60.set=ASSET
 52.set=ASSET
 53.base=C\:\\CORDOVA\\konotop\\platforms\\android\\app\\build\\intermediates\\assets\\debug
