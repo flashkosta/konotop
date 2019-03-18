@@ -31,11 +31,10 @@ function loadTest(num) { //#################### загрузка теста ####
             txt = data;
         }
     });
+    var obj = JSON.parse(txt);
+    console.log(obj);
     
     //str = txt.split("\r\n");
-    str = txt.replace(/\r\n/gm, "");
-    console.log(txt);
-    console.log(str);
     
     task.title = str[0];
     task.points = str[1];
