@@ -11,6 +11,7 @@ var fen_array = [];
 var pgn_array = [];
 var pgn_history = []; //история нотации
 var task = {};
+var task = {};
 
 var id = 0;
 var old_pgn;
@@ -22,7 +23,7 @@ $("#win_information").hide();
 $("#figure").hide();
 
 function loadTest(num) { //#################### загрузка теста ####################
-    var test_name = "test" + num + ".json";
+    var test_name = "test" + num + ".txt";
     var txt;
     $.ajax({
         url: "tests/" + test_name,
@@ -32,7 +33,7 @@ function loadTest(num) { //#################### загрузка теста ####
         }
     });
     
-    task = txt;
+    task = JSON.parse(txt);
     //console.log(task);
     task.steps = task.steps.split(", ");
     //task.title = "Бабцик - Лидер, Оберхоф, 1999";
