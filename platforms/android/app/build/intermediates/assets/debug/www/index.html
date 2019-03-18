@@ -1,0 +1,102 @@
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Chess v0.1</title>
+</head>
+
+<body class="bg-light">
+    <div class="container">
+
+        <div class="mx-auto" style="width: 128px;">
+            <img class="logo" src="img/logo.png">
+        </div>
+
+        <div class="row">
+            <div class="col-1">
+            </div>
+
+            <div class="col-10">
+
+                <div id="error" class="alert alert-danger" role="alert">
+
+                </div>
+
+                <form>
+                    <div class="form-group">
+
+                        <input type="text" class="form-control" id="login" placeholder="Ведите логин">
+                        <small id="emailHelp" class="form-text text-muted">Только латинские символы и цифры.</small>
+                    </div>
+                    <div class="form-group">
+
+                        <input type="password" class="form-control" id="pass" placeholder="Ведите пароль">
+                        <small id="emailHelp" class="form-text text-muted">Пароль должен быть надежным.</small>
+                    </div>
+                </form>
+
+                <button id="button_enter" type="button" class="btn btn-info btn-lg btn-block mb-3">Войти</button>
+
+            </div>
+            <div class="col-1">
+
+            </div>
+        </div>
+
+        <div class="fixed-bottom text-center">
+            <h4>С.В. Конотоп &copy;</h4>
+        </div>
+
+    </div>
+</body>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+    $("#error").hide(); //hide error div
+    $("#button_enter").click(function() {
+        var error_mess = "";
+        var login = $("#login").val();
+        var pass = $("#pass").val();
+        if (login.length < 3) {
+            error_mess += " Логин должен быть больше 2х символов!";
+        }
+        if (pass.length < 3) {
+            error_mess += " Пароль должен быть больше 2х символов!";
+        }
+        if (login.length > 10) {
+            error_mess += " Логин должен быть меньше 10ти символов!";
+        }
+        if (pass.length > 10) {
+            error_mess += " Пароль должен быть меньше 10ти символов!";
+        }
+        if (login.match("^[a-zA-Z0-9 ]*$") == null) {
+            error_mess += " Логин должен состоять только из латинских символов и цифр!";
+        }
+        if (pass.match("^[a-zA-Z0-9 ]*$") == null) {
+            error_mess += " Пароль должен состоять только из латинских символов и цифр!";
+        }
+
+        if (error_mess == "") {
+            window.location = "menu.html";
+            localStorage.login = login;
+            localStorage.pass = pass;
+        } else {
+            console.log(error_mess);
+            $("#error").text(error_mess)
+            $("#error").show();
+        }
+
+        console.log(login);
+        console.log(pass);
+    });
+
+</script>
+
+</html>

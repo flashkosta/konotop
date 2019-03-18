@@ -1,0 +1,80 @@
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Chess v0.1</title>
+</head>
+
+<body class="bg-light">
+    <div class="container">
+
+        <!--
+        <div class="mx-auto" style="width: 128px;">
+            <img class="logo" src="img/logo.png">
+        </div>
+        -->
+
+        <div class="row">
+            <div class="col-1">
+            </div>
+
+            <div class="col-10">
+
+                <button id="test_select" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">
+                    <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
+                        Тест № 1
+                    </div>
+                    <div id="point" class="badge badge-light text-wrap mb-1" style="width: 11rem;">
+                        0 очков из 25 возможных
+                    </div>
+                    <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
+                        Решено: 0 из 12
+                    </div>
+                    <!--<div class="badge badge-light text-wrap mb-1" style="width: 11rem;">
+                        Затраченное время: 00:00
+                    </div>-->
+                </button>
+                
+                <button id="menu" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">Меню</button>
+
+            </div>
+            <div class="col-1">
+
+            </div>
+        </div>
+
+        <div class="fixed-bottom text-center">
+            <h4>С.В. Конотоп &copy;</h4>
+        </div>
+
+    </div>
+</body>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+    //TEST
+    var test1_max_point = 25;
+    
+    $( "#test_select" ).click(function() {
+        window.location = "select_tests2.html";
+    });
+    $("#menu").click(function() {
+        window.location = "menu.html";
+    });
+    
+    if (localStorage.test1_result) {
+        $("#point").text(localStorage.test1_result + " очков из " + test1_max_point + " возможных");
+    } else {
+        $("#point").text("0 очков из " + test1_max_point + " возможных");
+    }
+
+</script>
+
+</html>

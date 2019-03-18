@@ -1,0 +1,58 @@
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Chess v0.1</title>
+</head>
+
+<body>
+    <div id="canvas_container" style="position:absolute; top:79px"><img id="figure" src="img/figures/pb.png"><canvas id="canvas" width="360" height="360" style="position: absolute; z-index: 15"></canvas></div>
+
+    <div id="error"></div>
+
+    <nav class="navbar navbar-light bg-primary">
+
+        <button type="button" class="btn btn-primary ml-0 mr-auto"><img src="img/left.png" width="20"></button>
+
+        <span class="font-weight-bold mr-5">Тест 1/12</span>
+
+        <button id="exit" type="button" class="btn btn-primary mr-0"><img src="img/menu.png" width="20"></button>
+
+        <button type="button" class="btn btn-primary mr-0"><img src="img/right.png" width="20"></button>
+
+    </nav>
+
+    <div id="title" class="text-center bg-light font-weight-bold"></div>
+
+    <div id="board" class="mx-auto"></div>
+
+    <div id="win_information" class="alert alert-success" role="alert"></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div id="gameover"><span style="color: brown"></span></div>
+                <div id="turn"></div>
+                <div id="pgn2"></div>
+                <!-- <div id="prev" style="display: inline"><b> prev </b></div><div id="pgn" style="display: inline" class="mt-1"></div><div id="next" style="display: inline"><b> next </b></div> -->
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+<script src="cordova.js" type="text/javascript"></script>
+<script src="js/chess.js" type="text/javascript"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="tests/test1.js"></script>
+<script src="js/arrow.js"></script>
+<script src="js/game.js"></script>
+
+</html>

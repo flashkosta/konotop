@@ -33,6 +33,8 @@ function loadTest(num) { //#################### загрузка теста ####
     });
     
     str = txt.split("\u000d\u000a");
+    console.log(txt);
+    console.log(str);
     
     task.title = str[0];
     task.points = str[1];
