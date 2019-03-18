@@ -31,15 +31,10 @@ function loadTest(num) { //#################### загрузка теста ####
             txt = data;
         }
     });
-    var obj = JSON.parse(txt);
-    console.log(obj);
-    
-    //str = txt.split("\r\n");
-    
-    task.title = str[0];
-    task.points = str[1];
-    task.fen = str[2];
-    task.steps = str[3].split(", ");
+    task = JSON.parse(txt);
+    console.log(task);
+
+    task.steps = task.steps.split(", ");
 
     //task.title = "Бабцик - Лидер, Оберхоф, 1999";
     //task.points = 3;
