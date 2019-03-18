@@ -33,7 +33,7 @@ function loadTest(num) { //#################### загрузка теста ####
     });
     
     //str = txt.split("\r\n");
-    str = txt.replace(/\r\n/g, "");
+    str = txt.replace(/\r\n/gm, "");
     console.log(txt);
     console.log(str);
     
