@@ -32,7 +32,7 @@ function loadTest(num) { //#################### загрузка теста ####
         }
     });
     
-    str = txt.split("\u000d\u000a");
+    str = txt.split(0x0d,0x0a);
     console.log(txt);
     console.log(str);
     
