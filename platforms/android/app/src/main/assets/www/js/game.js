@@ -25,7 +25,7 @@ function addSubnotation() {
     var subNotation = task.subnotation.split(", ");
     var subFens = task.subfens.split(", ");
     var notation = " [ ";
-    for (let i = 0; i < subNotation.length; i++) {
+    for (var i = 0; i < subNotation.length; i++) {
         notation += "<div id=\"" + id + "\" style=\"display: inline\"> " + subNotation[i] + " </div>";
         id++;
         pgnArray.push(subNotation[i]);
