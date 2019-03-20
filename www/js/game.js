@@ -11,7 +11,6 @@ var fen_array = [];
 var pgn_array = [];
 var pgn_history = []; //история нотации
 var task = {};
-var task = {};
 
 var id = 0;
 var old_pgn;
@@ -21,6 +20,20 @@ var fenArray = [];
 
 $("#win_information").hide();
 $("#figure").hide();
+
+function addSubnotation() {
+    var subNotation = task.subnotation.split(", ");
+    var subFens = task.subfens.split(", ");
+    var notation = " [ ";
+    for (let i = 0; i < subNotation.length; i++) {
+        notation += "<div id=\"" + id + "\" style=\"display: inline\"> " + subNotation[i] + " </div>";
+        id++;
+        pgnArray.push(subNotation[i]);
+        fenArray.push(subFens[i]);
+    }
+    $( "#" + task.subafter ).after(notation + " ] ");
+    PGN2();
+}
 
 function loadTest(num) { //#################### загрузка теста ####################
     var test_name = "test" + num + ".txt";
@@ -46,6 +59,8 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
     var parentDiv = "";
     var notationPCRE = "x";
     var pgnArrayPCRE = "y";
+    var notationPCRE2 = "x";
+    var pgnArrayPCRE2 = "y";
     var hooksFrom = "";
 
     if (old_pgn == null) {
@@ -67,29 +82,36 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
     console.log(pgnArray);
     console.log(pgnPosition);
     console.log(parentDiv);
-    console.log(pgnArray[parseInt(pgnPosition) + 1]);
-    console.log(notation, pgnArray[parseInt(pgnPosition) + 1]);
+    console.log("СРАВНИВЕМ - СЛЕД.ПОЗИЦИЯ", notation, " - ", $( "#" + pgnPosition ).next().text());
     console.log("--------- end ----------");
 
+    //повторы проверяем
     if (pgnArray[parseInt(pgnPosition) + 1] != undefined) {//проверяем - есть ли след за ткущим ход в истории от текущей позиции в нотации, заносим в переменную
         notationPCRE = notation.match(/[a-zA-Z0-9\+\#]{2,6}/);
         pgnArrayPCRE = pgnArray[parseInt(pgnPosition) + 1].match(/[a-zA-Z0-9\+\#]{2,6}/);
     }
+    var next = $( "#" + pgnPosition ).next().text();
+    if (next != "") {//проверяем - есть ли след за ткущим ход в истории от текущей позиции в нотации, заносим в переменную
+        notationPCRE2 = notation.match(/[a-zA-Z0-9\+\#]{2,6}/);
+        pgnArrayPCRE2 = next.match(/[a-zA-Z0-9\+\#]{2,6}/);
+    }
 
-    if (notationPCRE == null || notationPCRE[0] == pgnArrayPCRE[0]) {//текущий ход совпал со след. ходом в истории
+    if (notationPCRE == null || notationPCRE2 == null || notationPCRE[0] == pgnArrayPCRE[0] || notationPCRE2[0] == pgnArrayPCRE2[0]) {//текущий ход совпал со след. ходом в истории
         console.log("повтор!");
         pgnPosition++;
         pgn_state = 0;
     }
     if (notationPCRE != null && notationPCRE[0] != pgnArrayPCRE[0]) {//новый ход, текущий не совпал со след. в истории
         if (parentDiv == "") {//parenDiv равен пустоте, значит нотация без подвариантов
-            $("#pgn2").append("<div id=\"" + id + "\" style=\"display: inline\"> " + notation + " </div>");
+            $("#pgn2").append("<div id=\"" + id + "\" style=\"display: inline\"><b> " + notation + "</b> </div>");
         }
         if (parentDiv != "") {//parenDiv определен, подвариант есть
             if (pgn_state == 1) {//пользователь нажал на что то в нотаци
                 hooksFrom = " [ ";
-                var tmp_text = $("#" + String(Number(parentDiv) + 1)).text();
-                $("#" + String(Number(parentDiv) + 1)).text(" ] " + tmp_text);
+                //var tmp_text = $("#" + String(Number(parentDiv) + 1)).text();
+                //$("#" + String(Number(parentDiv) + 1)).text(" ] " + tmp_text);
+                $("#" + String(parentDiv)).next().before(" ] ");
+                $("#pgn2").html($("#pgn2").html().replace("[  ]", "] ["));//костыль
                 pgn_state = 0;
             }
             $("#" + parentDiv).after(hooksFrom + "<div id=\"" + id + "\" style=\"display: inline\"> " + notation + " </div>");
@@ -203,7 +225,7 @@ function gameOver(why) {
     if (why == "good") {
         localStorage.task1 = task.points; //начисляем баллы
         localStorage.test1 += task.points; //добавляем к общему количеству баллов за тест
-
+        addSubnotation();
         $("#win_information").text("Задание выполнено верно! Поздравляем");
         $("#win_information").show();
         win = 1;
