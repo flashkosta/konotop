@@ -20,6 +20,8 @@ var fenArray = [];
 
 $("#win_information").hide();
 $("#figure").hide();
+$( "#prev" ).hide();
+$( "#next" ).hide();
 
 function addSubnotation() {
     var subNotation = task.subnotation.split(", ");
@@ -32,7 +34,6 @@ function addSubnotation() {
         fenArray.push(subFens[i]);
     }
     $( "#" + task.subafter ).after(notation + " ] ");
-    PGN2();
 }
 
 function loadTest(num) { //#################### загрузка теста ####################
@@ -62,7 +63,72 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
     var notationPCRE2 = "x";
     var pgnArrayPCRE2 = "y";
     var hooksFrom = "";
+    
+    if (win == 1) {
+        $( "#prev" ).show();
+        $( "#next" ).show();
 
+        $("#prev2").click(function () {
+            if(pgnPosition == null) {
+                pgnPosition = 0;
+            }
+            if (pgnPosition > 0) {
+                pgnPosition = pgnPosition - 1;
+            }
+            
+            console.log("press prev", pgnPosition);
+            $( "#pgn2 > div" ).removeClass("bg-warning");
+            $( "#" + pgnPosition ).addClass("bg-warning");
+            var step = pgnPosition;
+            console.log("STEP ", step);
+            console.log("ID ", id);
+            console.log("LOAD ", fenArray[step]);
+            chess.load(fenArray[step]);
+            if (step != id - 1) {
+                pgnPosition = step;
+                pgn_state = 1
+            }
+            console.log(pgn_state);
+            drawing_board();
+            move();
+            console.log("*************************111111*****************************");
+            console.log(pgn_state);
+            console.log(parentDiv);
+            console.log(pgnPosition);
+            console.log("*************************111111*****************************");
+        });
+        $("#next2").click(function () {
+            if(pgnPosition == null) {
+                pgnPosition = -1;
+            }
+            if (pgnPosition < fenArray.length - 1) {
+                pgnPosition++;
+            }
+            
+            console.log("press next", pgnPosition);
+            $( "#pgn2 > div" ).removeClass("bg-warning");
+            $( "#" + pgnPosition ).addClass("bg-warning");
+            var step = pgnPosition;
+            console.log("STEP ", step);
+            console.log("ID ", id);
+            console.log("LOAD ", fenArray[step]);
+            chess.load(fenArray[step]);
+            if (step != id - 1) {
+                pgnPosition = step;
+                pgn_state = 1
+            }
+            console.log(pgn_state);
+            drawing_board();
+            move();
+            console.log("************************22222222******************************");
+            console.log(pgn_state);
+            console.log(parentDiv);
+            console.log(pgnPosition);
+            console.log("************************22222222******************************");
+        });
+
+    }
+    
     if (old_pgn == null) {
         var notation = chess.pgn();
         old_pgn = chess.pgn();
@@ -135,7 +201,11 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
                 pgnPosition = step;
                 pgn_state = 1
             }
+            console.log("******************************************************");
             console.log(pgn_state);
+            console.log(parentDiv);
+            console.log(pgnPosition);
+            console.log("******************************************************");
             drawing_board();
             move();
 
@@ -222,14 +292,16 @@ function gameOver(why) {
         }
         $("#canvas").show();
     }
-    if (why == "good") {
+    if (why == "good") {//WIN!!!!!!!
         localStorage.task1 = task.points; //начисляем баллы
         localStorage.test1 += task.points; //добавляем к общему количеству баллов за тест
+        win = 1;
         addSubnotation();
+        PGN2();
+        pgnArray.pop();
+        fenArray.pop();
         $("#win_information").text("Задание выполнено верно! Поздравляем");
         $("#win_information").show();
-        win = 1;
-
     }
 }
 

@@ -20,9 +20,24 @@ var fenArray = [];
 
 $("#win_information").hide();
 $("#figure").hide();
+$( "#prev" ).hide();
+$( "#next" ).hide();
+
+function addSubnotation() {
+    var subNotation = task.subnotation.split(", ");
+    var subFens = task.subfens.split(", ");
+    var notation = " [ ";
+    for (var i = 0; i < subNotation.length; i++) {
+        notation += "<div id=\"" + id + "\" style=\"display: inline\"> " + subNotation[i] + " </div>";
+        id++;
+        pgnArray.push(subNotation[i]);
+        fenArray.push(subFens[i]);
+    }
+    $( "#" + task.subafter ).after(notation + " ] ");
+}
 
 function loadTest(num) { //#################### загрузка теста ####################
-    var test_name = "test" + num + ".json";
+    var test_name = "test" + num + ".txt";
     var txt;
     $.ajax({
         url: "tests/" + test_name,
@@ -45,8 +60,75 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
     var parentDiv = "";
     var notationPCRE = "x";
     var pgnArrayPCRE = "y";
+    var notationPCRE2 = "x";
+    var pgnArrayPCRE2 = "y";
     var hooksFrom = "";
+    
+    if (win == 1) {
+        $( "#prev" ).show();
+        $( "#next" ).show();
 
+        $("#prev").click(function () {
+            if(pgnPosition == null) {
+                pgnPosition = 0;
+            }
+            if (pgnPosition > 0) {
+                pgnPosition = pgnPosition - 1;
+            }
+            
+            console.log("press prev", pgnPosition);
+            $( "#pgn2 > div" ).removeClass("bg-warning");
+            $( "#" + pgnPosition ).addClass("bg-warning");
+            var step = pgnPosition;
+            console.log("STEP ", step);
+            console.log("ID ", id);
+            console.log("LOAD ", fenArray[step]);
+            chess.load(fenArray[step]);
+            if (step != id - 1) {
+                pgnPosition = step;
+                pgn_state = 1
+            }
+            console.log(pgn_state);
+            drawing_board();
+            move();
+            console.log("*************************111111*****************************");
+            console.log(pgn_state);
+            console.log(parentDiv);
+            console.log(pgnPosition);
+            console.log("*************************111111*****************************");
+        });
+        $("#next").click(function () {
+            if(pgnPosition == null) {
+                pgnPosition = -1;
+            }
+            if (pgnPosition < fenArray.length - 1) {
+                pgnPosition++;
+            }
+            
+            console.log("press next", pgnPosition);
+            $( "#pgn2 > div" ).removeClass("bg-warning");
+            $( "#" + pgnPosition ).addClass("bg-warning");
+            var step = pgnPosition;
+            console.log("STEP ", step);
+            console.log("ID ", id);
+            console.log("LOAD ", fenArray[step]);
+            chess.load(fenArray[step]);
+            if (step != id - 1) {
+                pgnPosition = step;
+                pgn_state = 1
+            }
+            console.log(pgn_state);
+            drawing_board();
+            move();
+            console.log("************************22222222******************************");
+            console.log(pgn_state);
+            console.log(parentDiv);
+            console.log(pgnPosition);
+            console.log("************************22222222******************************");
+        });
+
+    }
+    
     if (old_pgn == null) {
         var notation = chess.pgn();
         old_pgn = chess.pgn();
@@ -66,29 +148,36 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
     console.log(pgnArray);
     console.log(pgnPosition);
     console.log(parentDiv);
-    console.log(pgnArray[parseInt(pgnPosition) + 1]);
-    console.log(notation, pgnArray[parseInt(pgnPosition) + 1]);
+    console.log("СРАВНИВЕМ - СЛЕД.ПОЗИЦИЯ", notation, " - ", $( "#" + pgnPosition ).next().text());
     console.log("--------- end ----------");
 
+    //повторы проверяем
     if (pgnArray[parseInt(pgnPosition) + 1] != undefined) {//проверяем - есть ли след за ткущим ход в истории от текущей позиции в нотации, заносим в переменную
         notationPCRE = notation.match(/[a-zA-Z0-9\+\#]{2,6}/);
         pgnArrayPCRE = pgnArray[parseInt(pgnPosition) + 1].match(/[a-zA-Z0-9\+\#]{2,6}/);
     }
+    var next = $( "#" + pgnPosition ).next().text();
+    if (next != "") {//проверяем - есть ли след за ткущим ход в истории от текущей позиции в нотации, заносим в переменную
+        notationPCRE2 = notation.match(/[a-zA-Z0-9\+\#]{2,6}/);
+        pgnArrayPCRE2 = next.match(/[a-zA-Z0-9\+\#]{2,6}/);
+    }
 
-    if (notationPCRE == null || notationPCRE[0] == pgnArrayPCRE[0]) {//текущий ход совпал со след. ходом в истории
+    if (notationPCRE == null || notationPCRE2 == null || notationPCRE[0] == pgnArrayPCRE[0] || notationPCRE2[0] == pgnArrayPCRE2[0]) {//текущий ход совпал со след. ходом в истории
         console.log("повтор!");
         pgnPosition++;
         pgn_state = 0;
     }
     if (notationPCRE != null && notationPCRE[0] != pgnArrayPCRE[0]) {//новый ход, текущий не совпал со след. в истории
         if (parentDiv == "") {//parenDiv равен пустоте, значит нотация без подвариантов
-            $("#pgn2").append("<div id=\"" + id + "\" style=\"display: inline\"> " + notation + " </div>");
+            $("#pgn2").append("<div id=\"" + id + "\" style=\"display: inline\"><b> " + notation + "</b> </div>");
         }
         if (parentDiv != "") {//parenDiv определен, подвариант есть
             if (pgn_state == 1) {//пользователь нажал на что то в нотаци
                 hooksFrom = " [ ";
-                var tmp_text = $("#" + String(Number(parentDiv) + 1)).text();
-                $("#" + String(Number(parentDiv) + 1)).text(" ] " + tmp_text);
+                //var tmp_text = $("#" + String(Number(parentDiv) + 1)).text();
+                //$("#" + String(Number(parentDiv) + 1)).text(" ] " + tmp_text);
+                $("#" + String(parentDiv)).next().before(" ] ");
+                $("#pgn2").html($("#pgn2").html().replace("[  ]", "] ["));//костыль
                 pgn_state = 0;
             }
             $("#" + parentDiv).after(hooksFrom + "<div id=\"" + id + "\" style=\"display: inline\"> " + notation + " </div>");
@@ -112,7 +201,11 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
                 pgnPosition = step;
                 pgn_state = 1
             }
+            console.log("******************************************************");
             console.log(pgn_state);
+            console.log(parentDiv);
+            console.log(pgnPosition);
+            console.log("******************************************************");
             drawing_board();
             move();
 
@@ -199,14 +292,16 @@ function gameOver(why) {
         }
         $("#canvas").show();
     }
-    if (why == "good") {
+    if (why == "good") {//WIN!!!!!!!
         localStorage.task1 = task.points; //начисляем баллы
         localStorage.test1 += task.points; //добавляем к общему количеству баллов за тест
-
+        win = 1;
+        addSubnotation();
+        PGN2();
+        pgnArray.pop();
+        fenArray.pop();
         $("#win_information").text("Задание выполнено верно! Поздравляем");
         $("#win_information").show();
-        win = 1;
-
     }
 }
 
