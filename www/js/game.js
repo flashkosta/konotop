@@ -296,7 +296,9 @@ function gameOver(why) {
         localStorage.task1 = task.points; //начисляем баллы
         localStorage.test1 += task.points; //добавляем к общему количеству баллов за тест
         win = 1;
-        addSubnotation();
+        if (task.subnotation != "") {
+            addSubnotation();
+        }
         PGN2();
         pgnArray.pop();
         fenArray.pop();
@@ -526,7 +528,9 @@ function move() {
     //console.log("*** MOVE END ***");
 }
 
-loadTest(1);
+var n = location.search.replace("?", "");
+loadTest(n);
+
 
 var chess = new Chess();
 chess.load(task.fen);

@@ -1,0 +1,9 @@
+{ 
+    "title": "ван дер Виль - Плистер, Голландия, 1994", 
+    "points": 2, 
+    "fen": "rnb2rk1/pp2qppp/8/3pp1P1/4nP2/2N2Q2/PPP4P/R1B1KB1R w KQ - 0 1",
+    "steps": "Nxd5, Qd7, Qxe4",
+    "subnotation": "1.Nxe4?, exf4!і",
+    "subfens": "rnb2rk1/pp2qppp/8/3pp1P1/4NP2/5Q2/PPP4P/R1B1KB1R b KQ - 0 1, rnb2rk1/pp2qppp/8/3p2P1/4Np2/5Q2/PPP4P/R1B1KB1R w KQ - 0 2",
+    "subafter": "0"
+}

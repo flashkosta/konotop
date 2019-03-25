@@ -27,7 +27,25 @@
 
                 <button id="task1" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">
                     <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
-                        Тест № 1
+                        Задание № 1
+                    </div>
+                </button>
+
+                <button id="task2" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">
+                    <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
+                        Задание № 2
+                    </div>
+                </button>
+
+                <button id="task3" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">
+                    <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
+                        Задание № 3
+                    </div>
+                </button>
+
+                <button id="task5" type="button" class="btn btn-info btn-lg btn-block mt-3 mb-3">
+                    <div class="badge badge-warning text-wrap mb-1" style="width: 11rem;">
+                        Задание № 5
                     </div>
                 </button>
                 
@@ -51,11 +69,21 @@
 
 <script>
     $("#task1").click(function() {
-        window.location = "game.html";
+        window.location = "game.html?1";
+    });
+    $("#task2").click(function() {
+        window.location = "game.html?2";
+    });
+    $("#task3").click(function() {
+        window.location = "game.html?3";
+    });
+    $("#task5").click(function() {
+        window.location = "game.html?5";
     });
     $("#menu").click(function() {
         window.location = "select_tests.html";
     });
+    
     
     if (localStorage.task1_result) {
         if (localStorage.task1_result == 0) {

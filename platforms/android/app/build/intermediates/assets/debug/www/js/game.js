@@ -68,7 +68,7 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
         $( "#prev" ).show();
         $( "#next" ).show();
 
-        $("#prev").click(function () {
+        $("#prev2").click(function () {
             if(pgnPosition == null) {
                 pgnPosition = 0;
             }
@@ -97,7 +97,7 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
             console.log(pgnPosition);
             console.log("*************************111111*****************************");
         });
-        $("#next").click(function () {
+        $("#next2").click(function () {
             if(pgnPosition == null) {
                 pgnPosition = -1;
             }
