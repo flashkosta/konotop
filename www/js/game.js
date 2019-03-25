@@ -68,63 +68,28 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
         $( "#prev" ).show();
         $( "#next" ).show();
 
-        $("#prev2").click(function () {
-            if(pgnPosition == null) {
-                pgnPosition = 0;
+        if (pgnPosition == null) {
+            var s = -1;
+        } else {
+            var s = pgnPosition;
+        }
+        var max = id - 1;
+        var min = 0;
+
+        $("#next").click(function () {
+            if (s < max) {
+                s = s + 1;
+                console.log("SSSSSSSSSS ", s);
+                $( "#" + s).trigger("click");
             }
-            if (pgnPosition > 0) {
-                pgnPosition = pgnPosition - 1;
-            }
-            
-            console.log("press prev", pgnPosition);
-            $( "#pgn2 > div" ).removeClass("bg-warning");
-            $( "#" + pgnPosition ).addClass("bg-warning");
-            var step = pgnPosition;
-            console.log("STEP ", step);
-            console.log("ID ", id);
-            console.log("LOAD ", fenArray[step]);
-            chess.load(fenArray[step]);
-            if (step != id - 1) {
-                pgnPosition = step;
-                pgn_state = 1
-            }
-            console.log(pgn_state);
-            drawing_board();
-            move();
-            console.log("*************************111111*****************************");
-            console.log(pgn_state);
-            console.log(parentDiv);
-            console.log(pgnPosition);
-            console.log("*************************111111*****************************");
         });
-        $("#next2").click(function () {
-            if(pgnPosition == null) {
-                pgnPosition = -1;
+
+        $("#prev").click(function () {
+            if (s > min) {
+                s = s - 1;
+                console.log("SSSSSSSSSS ", s);
+                $( "#" + s).trigger("click");
             }
-            if (pgnPosition < fenArray.length - 1) {
-                pgnPosition++;
-            }
-            
-            console.log("press next", pgnPosition);
-            $( "#pgn2 > div" ).removeClass("bg-warning");
-            $( "#" + pgnPosition ).addClass("bg-warning");
-            var step = pgnPosition;
-            console.log("STEP ", step);
-            console.log("ID ", id);
-            console.log("LOAD ", fenArray[step]);
-            chess.load(fenArray[step]);
-            if (step != id - 1) {
-                pgnPosition = step;
-                pgn_state = 1
-            }
-            console.log(pgn_state);
-            drawing_board();
-            move();
-            console.log("************************22222222******************************");
-            console.log(pgn_state);
-            console.log(parentDiv);
-            console.log(pgnPosition);
-            console.log("************************22222222******************************");
         });
 
     }
@@ -189,7 +154,7 @@ function PGN2() { //#################### НОТАЦИИ v2.0 ###################
 
     $(" #pgn2 > div").each(function (event) {
         $(this).unbind();
-        $(this).mouseup(function () {
+        $(this).on("click", function () {
             $(" #pgn2 > div").removeClass("bg-warning");
             $(this).addClass("bg-warning");
             var step = $(this).attr("id");
@@ -300,8 +265,8 @@ function gameOver(why) {
             addSubnotation();
         }
         PGN2();
-        pgnArray.pop();
-        fenArray.pop();
+        //pgnArray.pop();//ващпе ошибка
+        //fenArray.pop();//угу
         $("#win_information").text("Задание выполнено верно! Поздравляем");
         $("#win_information").show();
     }
